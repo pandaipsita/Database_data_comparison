@@ -245,14 +245,6 @@ def main():
                 print(f"❌ Error saving to alternate path: {e2}")
                 print("Unable to save report to disk. Continuing with in-memory report...")
 
-        # Generate HTML report
-        html_path = os.path.join("validation_reports", "validation_report.html")
-        try:
-            # You can implement your HTML generation here or call a function
-            print(f"✅ HTML report generated and saved to {html_path}")
-        except Exception as e:
-            print(f"⚠️ Error generating HTML report: {e}")
-
         # Step 7: Generate natural language summary with LLM
         print("\nStep 7: Generating natural language summary...")
         try:

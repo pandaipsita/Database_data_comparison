@@ -316,7 +316,6 @@
             height: 100%;
             background-color: var(--primary-color);
             border-radius: 10px;
-            width: 67.5%;
         }
 
         .progress-label {
@@ -381,7 +380,7 @@
                 <p><strong>Destination Schema:</strong> contractor_management</p>
             </div>
             <div>
-                <p><strong>Timestamp:</strong> 2025-05-02T14:50:24</p>
+                <p><strong>Timestamp:</strong> 2025-05-02T19:01:10.454319</p>
                 <p><strong>Great Expectations Version:</strong> 0.18.19</p>
             </div>
         </div>
@@ -394,27 +393,41 @@
                     <p>Tables Compared</p>
                 </div>
                 <div class="stat-card">
-                    <h3>80</h3>
+                    <h3>90</h3>
                     <p>Total Source Rows</p>
                 </div>
+                <div class="stat-card">
+                    <h3>80</h3>
+                    <p>Total Destination Rows</p>
+                </div>
                 <div class="stat-card success-stat">
-                    <h3>54</h3>
+                    <h3>56</h3>
                     <p>Matching Rows</p>
                 </div>
+            </div>
+            <div class="stats">
                 <div class="stat-card error-stat">
-                    <h3>26</h3>
+                    <h3>27</h3>
                     <p>Different Rows</p>
+                </div>
+                <div class="stat-card error-stat">
+                    <h3>7</h3>
+                    <p>Missing Rows</p>
+                </div>
+                <div class="stat-card error-stat">
+                    <h3>0</h3>
+                    <p>Extra Rows</p>
                 </div>
             </div>
 
             <div class="progress-container">
                 <h3>Data Match Progress</h3>
                 <div class="progress-bar">
-                    <div class="progress" style="width: 67.5%;"></div>
+                    <div class="progress" style="width: 62.2%;"></div>
                 </div>
                 <div class="progress-label">
                     <span>0%</span>
-                    <span>67.5% Matched</span>
+                    <span>62.2% Matched</span>
                     <span>100%</span>
                 </div>
             </div>
@@ -428,18 +441,21 @@
                 <div class="accordion-header">
                     <h3>Payroll</h3>
                     <div class="badges">
-                        <span class="badge badge-danger">7 Differences</span>
+                        <span class="badge badge-success">3 Matching</span>
+                        <span class="badge badge-danger">7 Different</span>
+                        <span class="badge badge-warning">2 Missing</span>
                     </div>
                 </div>
                 <div class="accordion-content">
                     <div class="table-summary">
-                        <p><strong>Summary:</strong> 10 rows in source, 10 rows in destination, 7 rows with differences (70% mismatch)</p>
+                        <p><strong>Summary:</strong> 12 rows in source, 10 rows in destination, 3 matching, 7 with differences, 2 missing</p>
                     </div>
+
                     <h4>Differences</h4>
                     <table class="diff-table">
                         <thead>
                             <tr>
-                                <th>Row ID</th>
+                                <th>Payroll ID</th>
                                 <th>Field</th>
                                 <th>Source Value</th>
                                 <th>Destination Value</th>
@@ -498,6 +514,80 @@
                             </tr>
                         </tbody>
                     </table>
+
+                    <h4>Missing Rows</h4>
+                    <table class="diff-table">
+                        <thead>
+                            <tr>
+                                <th>Payroll ID</th>
+                                <th>Employee ID</th>
+                                <th>Payment Date</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>19</td>
+                                <td>1</td>
+                                <td>2024-06-31</td>
+                                <td>8900.00</td>
+                            </tr>
+                            <tr>
+                                <td>72</td>
+                                <td>2</td>
+                                <td>2022-02-31</td>
+                                <td>1230.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AssetsAssigned Table -->
+            <div class="accordion">
+                <div class="accordion-header">
+                    <h3>AssetsAssigned</h3>
+                    <div class="badges">
+                        <span class="badge badge-success">7 Matching</span>
+                        <span class="badge badge-warning">3 Different</span>
+                        <span class="badge badge-danger">0 Missing</span>
+                    </div>
+                </div>
+                <div class="accordion-content">
+                    <div class="table-summary">
+                        <p><strong>Summary:</strong> 10 rows in source, 10 rows in destination, 7 matching, 3 with differences, 0 missing</p>
+                    </div>
+                    <h4>Differences</h4>
+                    <table class="diff-table">
+                        <thead>
+                            <tr>
+                                <th>Asset ID</th>
+                                <th>Field</th>
+                                <th>Source Value</th>
+                                <th>Destination Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>asset_name</td>
+                                <td>Laptop</td>
+                                <td class="diff-highlight">Mac</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>assigned_date</td>
+                                <td>2024-01-08</td>
+                                <td class="diff-highlight">2022-06-08</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>assigned_date</td>
+                                <td>2024-01-10</td>
+                                <td class="diff-highlight">1999-01-10</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -506,18 +596,20 @@
                 <div class="accordion-header">
                     <h3>Attendance</h3>
                     <div class="badges">
-                        <span class="badge badge-warning">3 Differences</span>
+                        <span class="badge badge-success">9 Matching</span>
+                        <span class="badge badge-warning">3 Different</span>
+                        <span class="badge badge-danger">2 Missing</span>
                     </div>
                 </div>
                 <div class="accordion-content">
                     <div class="table-summary">
-                        <p><strong>Summary:</strong> 10 rows in source, 10 rows in destination, 3 rows with differences (30% mismatch)</p>
+                        <p><strong>Summary:</strong> 14 rows in source, 10 rows in destination, 9 matching, 3 with differences, 2 missing</p>
                     </div>
                     <h4>Differences</h4>
                     <table class="diff-table">
                         <thead>
                             <tr>
-                                <th>Row ID</th>
+                                <th>Attendance ID</th>
                                 <th>Field</th>
                                 <th>Source Value</th>
                                 <th>Destination Value</th>
@@ -544,6 +636,252 @@
                             </tr>
                         </tbody>
                     </table>
+
+                    <h4>Missing Rows</h4>
+                    <table class="diff-table">
+                        <thead>
+                            <tr>
+                                <th>Attendance ID</th>
+                                <th>Employee ID</th>
+                                <th>Attendance Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>22</td>
+                                <td>2</td>
+                                <td>2028-04-01</td>
+                                <td>Inprogress</td>
+                            </tr>
+                            <tr>
+                                <td>44</td>
+                                <td>4</td>
+                                <td>1994-04-05</td>
+                                <td>Present</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Department Table -->
+            <div class="accordion">
+                <div class="accordion-header">
+                    <h3>Department</h3>
+                    <div class="badges">
+                        <span class="badge badge-success">8 Matching</span>
+                        <span class="badge badge-warning">3 Different</span>
+                        <span class="badge badge-danger">3 Missing</span>
+                    </div>
+                </div>
+                <div class="accordion-content">
+                    <div class="table-summary">
+                        <p><strong>Summary:</strong> 14 rows in source, 10 rows in destination, 8 matching, 3 with differences, 3 missing</p>
+                    </div>
+                    <h4>Differences</h4>
+                    <table class="diff-table">
+                        <thead>
+                            <tr>
+                                <th>Department ID</th>
+                                <th>Field</th>
+                                <th>Source Value</th>
+                                <th>Destination Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2</td>
+                                <td>location</td>
+                                <td>San Francisco</td>
+                                <td class="diff-highlight">Tam Francisco</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>location</td>
+                                <td>Chicago</td>
+                                <td class="diff-highlight">France</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>location</td>
+                                <td>Chicago</td>
+                                <td class="diff-highlight">France</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4>Missing Rows</h4>
+                    <table class="diff-table">
+                        <thead>
+                            <tr>
+                                <th>Department ID</th>
+                                <th>Name</th>
+                                <th>Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>11</td>
+                                <td>manager</td>
+                                <td>New York</td>
+                            </tr>
+                            <tr>
+                                <td>12</td>
+                                <td>Engineering</td>
+                                <td>'New Delhi'</td>
+                            </tr>
+                            <tr>
+                                <td>14</td>
+                                <td>Finance</td>
+                                <td>USA</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PerformanceReviews Table -->
+            <div class="accordion">
+                <div class="accordion-header">
+                    <h3>PerformanceReviews</h3>
+                    <div class="badges">
+                        <span class="badge badge-success">7 Matching</span>
+                        <span class="badge badge-warning">3 Different</span>
+                        <span class="badge badge-danger">0 Missing</span>
+                    </div>
+                </div>
+                <div class="accordion-content">
+                    <div class="table-summary">
+                        <p><strong>Summary:</strong> 10 rows in source, 10 rows in destination, 7 matching, 3 with differences, 0 missing</p>
+                    </div>
+                    <h4>Differences</h4>
+                    <table class="diff-table">
+                        <thead>
+                            <tr>
+                                <th>Review ID</th>
+                                <th>Field</th>
+                                <th>Source Value</th>
+                                <th>Destination Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2</td>
+                                <td>comments</td>
+                                <td>Excellent</td>
+                                <td class="diff-highlight">Superb</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>comments</td>
+                                <td>Satisfactory</td>
+                                <td class="diff-highlight">Satisfy</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>comments</td>
+                                <td>Can do better</td>
+                                <td class="diff-highlight">'Can't do better'</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- LeaveRequests Table -->
+            <div class="accordion">
+                <div class="accordion-header">
+                    <h3>LeaveRequests</h3>
+                    <div class="badges">
+                        <span class="badge badge-success">7 Matching</span>
+                        <span class="badge badge-warning">3 Different</span>
+                        <span class="badge badge-danger">0 Missing</span>
+                    </div>
+                </div>
+                <div class="accordion-content">
+                    <div class="table-summary">
+                        <p><strong>Summary:</strong> 10 rows in source, 10 rows in destination, 7 matching, 3 with differences, 0 missing</p>
+                    </div>
+                    <h4>Differences</h4>
+                    <table class="diff-table">
+                        <thead>
+                            <tr>
+                                <th>Leave ID</th>
+                                <th>Field</th>
+                                <th>Source Value</th>
+                                <th>Destination Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2</td>
+                                <td>status</td>
+                                <td>Pending</td>
+                                <td class="diff-highlight">Submitted</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>status</td>
+                                <td>Pending</td>
+                                <td class="diff-highlight">Submitted</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>status</td>
+                                <td>Approved</td>
+                                <td class="diff-highlight">Submitted</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- EmergencyContacts Table -->
+            <div class="accordion">
+                <div class="accordion-header">
+                    <h3>EmergencyContacts</h3>
+                    <div class="badges">
+                        <span class="badge badge-success">8 Matching</span>
+                        <span class="badge badge-warning">2 Different</span>
+                        <span class="badge badge-danger">0 Missing</span>
+                    </div>
+                </div>
+                <div class="accordion-content">
+                    <div class="table-summary">
+                        <p><strong>Summary:</strong> 10 rows in source, 10 rows in destination, 8 matching, 2 with differences, 0 missing</p>
+                    </div>
+                    <h4>Differences</h4>
+                    <table class="diff-table">
+                        <thead>
+                            <tr>
+                                <th>Contact ID</th>
+                                <th>Field</th>
+                                <th>Source Value</th>
+                                <th>Destination Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>relation</td>
+                                <td>Mother</td>
+                                <td class="diff-highlight">Husband</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>phone_number</td>
+                                <td>1234567890</td>
+                                <td class="diff-highlight">1234567678</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>phone_number</td>
+                                <td>1234567897</td>
+                                <td class="diff-highlight">9867464647</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -552,18 +890,50 @@
                 <div class="accordion-header">
                     <h3>TrainingRecords</h3>
                     <div class="badges">
-                        <span class="badge badge-warning">3 Differences</span>
+                        <span class="badge badge-success">7 Matching</span>
+                        <span class="badge badge-warning">3 Different</span>
+                        <span class="badge badge-danger">0 Missing</span>
                     </div>
                 </div>
                 <div class="accordion-content">
                     <div class="table-summary">
-                        <p><strong>Summary:</strong> 10 rows in source, 10 rows in destination, 3 rows with differences (30% mismatch)</p>
+                        <p><strong>Summary:</strong> 10 rows in source, 10 rows in destination, 7 matching, 3 with differences, 0 missing</p>
                     </div>
                     <h4>Differences</h4>
                     <table class="diff-table">
                         <thead>
                             <tr>
-                                <th>Row ID</th>
+                                <th>Training ID</th>
+                                <th>Field</th>
+                                <th>Source
+<                                <td>phone_number</td>
+                                <td>1234567897</td>
+                                <td class="diff-highlight">9867464647</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TrainingRecords Table -->
+            <div class="accordion">
+                <div class="accordion-header">
+                    <h3>TrainingRecords</h3>
+                    <div class="badges">
+                        <span class="badge badge-success">7 Matching</span>
+                        <span class="badge badge-warning">3 Different</span>
+                        <span class="badge badge-danger">0 Missing</span>
+                    </div>
+                </div>
+                <div class="accordion-content">
+                    <div class="table-summary">
+                        <p><strong>Summary:</strong> 10 rows in source, 10 rows in destination, 7 matching, 3 with differences, 0 missing</p>
+                    </div>
+                    <h4>Differences</h4>
+                    <table class="diff-table">
+                        <thead>
+                            <tr>
+                                <th>Training ID</th>
                                 <th>Field</th>
                                 <th>Source Value</th>
                                 <th>Destination Value</th>
@@ -598,244 +968,20 @@
                     </table>
                 </div>
             </div>
-
-            <!-- AssetsAssigned Table -->
-            <div class="accordion">
-                <div class="accordion-header">
-                    <h3>AssetsAssigned</h3>
-                    <div class="badges">
-                        <span class="badge badge-warning">3 Differences</span>
-                    </div>
-                </div>
-                <div class="accordion-content">
-                    <div class="table-summary">
-                        <p><strong>Summary:</strong> 10 rows in source, 10 rows in destination, 3 rows with differences (30% mismatch)</p>
-                    </div>
-                    <h4>Differences</h4>
-                    <table class="diff-table">
-                        <thead>
-                            <tr>
-                                <th>Row ID</th>
-                                <th>Field</th>
-                                <th>Source Value</th>
-                                <th>Destination Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>asset_name</td>
-                                <td>Laptop</td>
-                                <td class="diff-highlight">Mac</td>
-                            </tr>
-                            <tr>
-                                <td>8</td>
-                                <td>assigned_date</td>
-                                <td>2024-01-08</td>
-                                <td class="diff-highlight">2022-06-08</td>
-                            </tr>
-                            <tr>
-                                <td>10</td>
-                                <td>assigned_date</td>
-                                <td>2024-01-10</td>
-                                <td class="diff-highlight">1999-01-10</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- LeaveRequests Table -->
-            <div class="accordion">
-                <div class="accordion-header">
-                    <h3>LeaveRequests</h3>
-                    <div class="badges">
-                        <span class="badge badge-warning">3 Differences</span>
-                    </div>
-                </div>
-                <div class="accordion-content">
-                    <div class="table-summary">
-                        <p><strong>Summary:</strong> 10 rows in source, 10 rows in destination, 3 rows with differences (30% mismatch)</p>
-                    </div>
-                    <h4>Differences</h4>
-                    <table class="diff-table">
-                        <thead>
-                            <tr>
-                                <th>Row ID</th>
-                                <th>Field</th>
-                                <th>Source Value</th>
-                                <th>Destination Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>2</td>
-                                <td>status</td>
-                                <td>Pending</td>
-                                <td class="diff-highlight">Submitted</td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>status</td>
-                                <td>Pending</td>
-                                <td class="diff-highlight">Submitted</td>
-                            </tr>
-                            <tr>
-                                <td>10</td>
-                                <td>status</td>
-                                <td>Approved</td>
-                                <td class="diff-highlight">Submitted</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- PerformanceReviews Table -->
-            <div class="accordion">
-                <div class="accordion-header">
-                    <h3>PerformanceReviews</h3>
-                    <div class="badges">
-                        <span class="badge badge-warning">3 Differences</span>
-                    </div>
-                </div>
-                <div class="accordion-content">
-                    <div class="table-summary">
-                        <p><strong>Summary:</strong> 10 rows in source, 10 rows in destination, 3 rows with differences (30% mismatch)</p>
-                    </div>
-                    <h4>Differences</h4>
-                    <table class="diff-table">
-                        <thead>
-                            <tr>
-                                <th>Row ID</th>
-                                <th>Field</th>
-                                <th>Source Value</th>
-                                <th>Destination Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>2</td>
-                                <td>comments</td>
-                                <td>Excellent</td>
-                                <td class="diff-highlight">Superb</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>comments</td>
-                                <td>Satisfactory</td>
-                                <td class="diff-highlight">Satisfy</td>
-                            </tr>
-                            <tr>
-                                <td>10</td>
-                                <td>comments</td>
-                                <td>Can do better</td>
-                                <td class="diff-highlight">'Can't do better'</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Department Table -->
-            <div class="accordion">
-                <div class="accordion-header">
-                    <h3>Department</h3>
-                    <div class="badges">
-                        <span class="badge badge-warning">2 Differences</span>
-                    </div>
-                </div>
-                <div class="accordion-content">
-                    <div class="table-summary">
-                        <p><strong>Summary:</strong> 10 rows in source, 10 rows in destination, 2 rows with differences (20% mismatch)</p>
-                    </div>
-                    <h4>Differences</h4>
-                    <table class="diff-table">
-                        <thead>
-                            <tr>
-                                <th>Row ID</th>
-                                <th>Field</th>
-                                <th>Source Value</th>
-                                <th>Destination Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>2</td>
-                                <td>location</td>
-                                <td>San Francisco</td>
-                                <td class="diff-highlight">Tam Francisco</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>location</td>
-                                <td>Chicago</td>
-                                <td class="diff-highlight">France</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- EmergencyContacts Table -->
-            <div class="accordion">
-                <div class="accordion-header">
-                    <h3>EmergencyContacts</h3>
-                    <div class="badges">
-                        <span class="badge badge-warning">2 Differences</span>
-                    </div>
-                </div>
-                <div class="accordion-content">
-                    <div class="table-summary">
-                        <p><strong>Summary:</strong> 10 rows in source, 10 rows in destination, 2 rows with differences (20% mismatch)</p>
-                    </div>
-                    <h4>Differences</h4>
-                    <table class="diff-table">
-                        <thead>
-                            <tr>
-                                <th>Row ID</th>
-                                <th>Field</th>
-                                <th>Source Value</th>
-                                <th>Destination Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>relation</td>
-                                <td>Mother</td>
-                                <td class="diff-highlight">Husband</td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>phone_number</td>
-                                <td>1234567890</td>
-                                <td class="diff-highlight">1234567678</td>
-                            </tr>
-                            <tr>
-                                <td>8</td>
-                                <td>phone_number</td>
-                                <td>1234567897</td>
-                                <td class="diff-highlight">9867464647</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
 
         <div class="mismatched-tables">
-            <h3>Tables that exists in only schema</h3>
+            <h3>Tables that exist in only one schema</h3>
             <div class="schema-status">
                 <div class="schema-card">
-                    <h3>Tables in employee_management database Only</h3>
+                    <h3>Tables in employee_management Only</h3>
                     <ul>
-                        <li>transactionhistory_employee</li>
                         <li>employee</li>
+                        <li>transactionhistory_employee</li>
                     </ul>
                 </div>
                 <div class="schema-card">
-                    <h3>Tables in contractor_management database Only</h3>
+                    <h3>Tables in contractor_management Only</h3>
                     <ul>
                         <li>contractor</li>
                         <li>transactionhistory_contractor</li>

@@ -3,261 +3,199 @@
     "great_expectations_version": "0.18.19",
     "source_schema": "employee_management",
     "destination_schema": "contractor_management",
-    "timestamp": "2025-05-02T14:50:24.860869",
+    "timestamp": "2025-05-02T19:01:10.454319",
     "tables_compared": 8
   },
   "table_comparisons": {
-    "attendance": {
+    "payroll": {
       "success": false,
       "meta": {
         "source_schema": "employee_management",
         "destination_schema": "contractor_management",
-        "table": "attendance",
-        "timestamp": "2025-05-02T14:50:24.861707"
+        "table": "payroll",
+        "timestamp": "2025-05-02T19:01:10.455485"
       },
       "summary": {
-        "rows_in_source": 10,
+        "rows_in_source": 12,
         "rows_in_destination": 10,
-        "matching_rows": 7,
-        "missing_rows": 0,
-        "different_rows": 3,
+        "matching_rows": 3,
+        "missing_rows": 2,
+        "different_rows": 7,
         "extra_rows": 0
       },
       "details": {
         "matching_rows": [
           {
-            "attendance_id": "1",
-            "employee_id": "1",
-            "attendance_date": "2024-04-01",
-            "status": "Present"
-          },
-          {
-            "attendance_id": "2",
+            "payroll_id": "2",
             "employee_id": "2",
-            "attendance_date": "2024-04-01",
-            "status": "Absent"
+            "payment_date": "2024-03-31",
+            "amount": "6000.00"
           },
           {
-            "attendance_id": "3",
-            "employee_id": "3",
-            "attendance_date": "2024-04-01",
-            "status": "Present"
+            "payroll_id": "4",
+            "employee_id": "4",
+            "payment_date": "2024-03-31",
+            "amount": "7000.00"
           },
           {
-            "attendance_id": "5",
-            "employee_id": "5",
-            "attendance_date": "2024-04-01",
-            "status": "Late"
-          },
-          {
-            "attendance_id": "6",
-            "employee_id": "6",
-            "attendance_date": "2024-04-01",
-            "status": "Present"
-          },
-          {
-            "attendance_id": "7",
-            "employee_id": "7",
-            "attendance_date": "2024-04-01",
-            "status": "Absent"
-          },
-          {
-            "attendance_id": "8",
+            "payroll_id": "8",
             "employee_id": "8",
-            "attendance_date": "2024-04-01",
-            "status": "Present"
+            "payment_date": "2024-03-31",
+            "amount": "6800.00"
           }
         ],
-        "missing_rows": [],
-        "different_rows": [
+        "missing_rows": [
           {
-            "source_row": {
-              "attendance_id": "4",
-              "employee_id": "4",
-              "attendance_date": "2024-04-01",
-              "status": "Present"
-            },
-            "destination_row": {
-              "attendance_id": "4",
-              "contractor_id": "4",
-              "attendance_date": "2024-04-01",
-              "status": "Absent"
-            },
-            "differences": {
-              "status": {
-                "source": "Present",
-                "destination": "Absent"
-              }
-            }
-          },
-          {
-            "source_row": {
-              "attendance_id": "9",
-              "employee_id": "9",
-              "attendance_date": "2024-04-01",
-              "status": "Late"
-            },
-            "destination_row": {
-              "attendance_id": "9",
-              "contractor_id": "9",
-              "attendance_date": "2024-04-01",
-              "status": "Early"
-            },
-            "differences": {
-              "status": {
-                "source": "Late",
-                "destination": "Early"
-              }
-            }
-          },
-          {
-            "source_row": {
-              "attendance_id": "10",
-              "employee_id": "10",
-              "attendance_date": "2024-04-01",
-              "status": "Present"
-            },
-            "destination_row": {
-              "attendance_id": "10",
-              "contractor_id": "10",
-              "attendance_date": "2024-04-01",
-              "status": "Absent"
-            },
-            "differences": {
-              "status": {
-                "source": "Present",
-                "destination": "Absent"
-              }
-            }
-          }
-        ],
-        "extra_rows": []
-      }
-    },
-    "trainingrecords": {
-      "success": false,
-      "meta": {
-        "source_schema": "employee_management",
-        "destination_schema": "contractor_management",
-        "table": "trainingrecords",
-        "timestamp": "2025-05-02T14:50:24.863360"
-      },
-      "summary": {
-        "rows_in_source": 10,
-        "rows_in_destination": 10,
-        "matching_rows": 7,
-        "missing_rows": 0,
-        "different_rows": 3,
-        "extra_rows": 0
-      },
-      "details": {
-        "matching_rows": [
-          {
-            "training_id": "1",
+            "payroll_id": "19",
             "employee_id": "1",
-            "course_name": "Time Management",
-            "completed_date": "2024-02-01"
+            "payment_date": "2024-06-31",
+            "amount": "8900.00"
           },
           {
-            "training_id": "3",
-            "employee_id": "3",
-            "course_name": "Agile Basics",
-            "completed_date": "2024-02-03"
-          },
-          {
-            "training_id": "5",
-            "employee_id": "5",
-            "course_name": "Advanced Excel",
-            "completed_date": "2024-02-05"
-          },
-          {
-            "training_id": "6",
-            "employee_id": "6",
-            "course_name": "Presentation Skills",
-            "completed_date": "2024-02-06"
-          },
-          {
-            "training_id": "8",
-            "employee_id": "8",
-            "course_name": "Security Essentials",
-            "completed_date": "2024-02-08"
-          },
-          {
-            "training_id": "9",
-            "employee_id": "9",
-            "course_name": "Data Analysis",
-            "completed_date": "2024-02-09"
-          },
-          {
-            "training_id": "10",
-            "employee_id": "10",
-            "course_name": "Conflict Management",
-            "completed_date": "2024-02-10"
+            "payroll_id": "72",
+            "employee_id": "2",
+            "payment_date": "2022-02-31",
+            "amount": "1230.00"
           }
         ],
-        "missing_rows": [],
         "different_rows": [
           {
             "source_row": {
-              "training_id": "2",
-              "employee_id": "2",
-              "course_name": "Leadership",
-              "completed_date": "2024-02-02"
+              "payroll_id": "1",
+              "employee_id": "1",
+              "payment_date": "2024-03-31",
+              "amount": "5000.00"
             },
             "destination_row": {
-              "training_id": "2",
-              "contractor_id": "2",
-              "course_name": "Python",
-              "completed_date": "2024-02-02"
+              "payroll_id": "1",
+              "contractor_id": "1",
+              "payment_date": "2024-03-31",
+              "amount": "9000.00"
             },
             "differences": {
-              "course_name": {
-                "source": "Leadership",
-                "destination": "Python"
+              "amount": {
+                "source": "5000.00",
+                "destination": "9000.00"
               }
             }
           },
           {
             "source_row": {
-              "training_id": "4",
-              "employee_id": "4",
-              "course_name": "SQL Mastery",
-              "completed_date": "2024-02-04"
+              "payroll_id": "3",
+              "employee_id": "3",
+              "payment_date": "2024-03-31",
+              "amount": "4500.00"
             },
             "destination_row": {
-              "training_id": "4",
-              "contractor_id": "4",
-              "course_name": "Java Mastery",
-              "completed_date": "2024-02-04"
+              "payroll_id": "3",
+              "contractor_id": "3",
+              "payment_date": "2024-03-31",
+              "amount": "4900.00"
             },
             "differences": {
-              "course_name": {
-                "source": "SQL Mastery",
-                "destination": "Java Mastery"
+              "amount": {
+                "source": "4500.00",
+                "destination": "4900.00"
               }
             }
           },
           {
             "source_row": {
-              "training_id": "7",
+              "payroll_id": "5",
+              "employee_id": "5",
+              "payment_date": "2024-03-31",
+              "amount": "5200.00"
+            },
+            "destination_row": {
+              "payroll_id": "5",
+              "contractor_id": "5",
+              "payment_date": "2024-03-31",
+              "amount": "5220.00"
+            },
+            "differences": {
+              "amount": {
+                "source": "5200.00",
+                "destination": "5220.00"
+              }
+            }
+          },
+          {
+            "source_row": {
+              "payroll_id": "6",
+              "employee_id": "6",
+              "payment_date": "2024-03-31",
+              "amount": "6100.00"
+            },
+            "destination_row": {
+              "payroll_id": "6",
+              "contractor_id": "6",
+              "payment_date": "2024-03-31",
+              "amount": "9100.00"
+            },
+            "differences": {
+              "amount": {
+                "source": "6100.00",
+                "destination": "9100.00"
+              }
+            }
+          },
+          {
+            "source_row": {
+              "payroll_id": "7",
               "employee_id": "7",
-              "course_name": "Cloud Basics",
-              "completed_date": "2024-02-07"
+              "payment_date": "2024-03-31",
+              "amount": "4900.00"
             },
             "destination_row": {
-              "training_id": "7",
+              "payroll_id": "7",
               "contractor_id": "7",
-              "course_name": "docker",
-              "completed_date": "2024-08-01"
+              "payment_date": "2024-03-31",
+              "amount": "2900.00"
             },
             "differences": {
-              "course_name": {
-                "source": "Cloud Basics",
-                "destination": "docker"
-              },
-              "completed_date": {
-                "source": "2024-02-07",
-                "destination": "2024-08-01"
+              "amount": {
+                "source": "4900.00",
+                "destination": "2900.00"
+              }
+            }
+          },
+          {
+            "source_row": {
+              "payroll_id": "9",
+              "employee_id": "9",
+              "payment_date": "2024-03-31",
+              "amount": "4700.00"
+            },
+            "destination_row": {
+              "payroll_id": "9",
+              "contractor_id": "9",
+              "payment_date": "2024-03-31",
+              "amount": "4710.00"
+            },
+            "differences": {
+              "amount": {
+                "source": "4700.00",
+                "destination": "4710.00"
+              }
+            }
+          },
+          {
+            "source_row": {
+              "payroll_id": "10",
+              "employee_id": "10",
+              "payment_date": "2024-03-31",
+              "amount": "7300.00"
+            },
+            "destination_row": {
+              "payroll_id": "10",
+              "contractor_id": "10",
+              "payment_date": "2024-03-31",
+              "amount": "7390.00"
+            },
+            "differences": {
+              "amount": {
+                "source": "7300.00",
+                "destination": "7390.00"
               }
             }
           }
@@ -271,7 +209,7 @@
         "source_schema": "employee_management",
         "destination_schema": "contractor_management",
         "table": "assetsassigned",
-        "timestamp": "2025-05-02T14:50:24.864144"
+        "timestamp": "2025-05-02T19:01:10.457564"
       },
       "summary": {
         "rows_in_source": 10,
@@ -392,13 +330,440 @@
         "extra_rows": []
       }
     },
+    "attendance": {
+      "success": false,
+      "meta": {
+        "source_schema": "employee_management",
+        "destination_schema": "contractor_management",
+        "table": "attendance",
+        "timestamp": "2025-05-02T19:01:10.458616"
+      },
+      "summary": {
+        "rows_in_source": 14,
+        "rows_in_destination": 10,
+        "matching_rows": 9,
+        "missing_rows": 2,
+        "different_rows": 3,
+        "extra_rows": 0
+      },
+      "details": {
+        "matching_rows": [
+          {
+            "attendance_id": "1",
+            "employee_id": "1",
+            "attendance_date": "2024-04-01",
+            "status": "Present"
+          },
+          {
+            "attendance_id": "2",
+            "employee_id": "2",
+            "attendance_date": "2024-04-01",
+            "status": "Absent"
+          },
+          {
+            "attendance_id": "3",
+            "employee_id": "3",
+            "attendance_date": "2024-04-01",
+            "status": "Present"
+          },
+          {
+            "attendance_id": "5",
+            "employee_id": "5",
+            "attendance_date": "2024-04-01",
+            "status": "Late"
+          },
+          {
+            "attendance_id": "6",
+            "employee_id": "6",
+            "attendance_date": "2024-04-01",
+            "status": "Present"
+          },
+          {
+            "attendance_id": "7",
+            "employee_id": "7",
+            "attendance_date": "2024-04-01",
+            "status": "Absent"
+          },
+          {
+            "attendance_id": "8",
+            "employee_id": "8",
+            "attendance_date": "2024-04-01",
+            "status": "Present"
+          },
+          {
+            "attendance_id": "1",
+            "employee_id": "1",
+            "attendance_date": "2024-04-01",
+            "status": "Present"
+          },
+          {
+            "attendance_id": "3",
+            "employee_id": "3",
+            "attendance_date": "2024-04-01",
+            "status": "Present"
+          }
+        ],
+        "missing_rows": [
+          {
+            "attendance_id": "22",
+            "employee_id": "2",
+            "attendance_date": "2028-04-01",
+            "status": "Inprogress"
+          },
+          {
+            "attendance_id": "44",
+            "employee_id": "4",
+            "attendance_date": "1994-04-05",
+            "status": "Present"
+          }
+        ],
+        "different_rows": [
+          {
+            "source_row": {
+              "attendance_id": "4",
+              "employee_id": "4",
+              "attendance_date": "2024-04-01",
+              "status": "Present"
+            },
+            "destination_row": {
+              "attendance_id": "4",
+              "contractor_id": "4",
+              "attendance_date": "2024-04-01",
+              "status": "Absent"
+            },
+            "differences": {
+              "status": {
+                "source": "Present",
+                "destination": "Absent"
+              }
+            }
+          },
+          {
+            "source_row": {
+              "attendance_id": "9",
+              "employee_id": "9",
+              "attendance_date": "2024-04-01",
+              "status": "Late"
+            },
+            "destination_row": {
+              "attendance_id": "9",
+              "contractor_id": "9",
+              "attendance_date": "2024-04-01",
+              "status": "Early"
+            },
+            "differences": {
+              "status": {
+                "source": "Late",
+                "destination": "Early"
+              }
+            }
+          },
+          {
+            "source_row": {
+              "attendance_id": "10",
+              "employee_id": "10",
+              "attendance_date": "2024-04-01",
+              "status": "Present"
+            },
+            "destination_row": {
+              "attendance_id": "10",
+              "contractor_id": "10",
+              "attendance_date": "2024-04-01",
+              "status": "Absent"
+            },
+            "differences": {
+              "status": {
+                "source": "Present",
+                "destination": "Absent"
+              }
+            }
+          }
+        ],
+        "extra_rows": []
+      }
+    },
+    "department": {
+      "success": false,
+      "meta": {
+        "source_schema": "employee_management",
+        "destination_schema": "contractor_management",
+        "table": "department",
+        "timestamp": "2025-05-02T19:01:10.459527"
+      },
+      "summary": {
+        "rows_in_source": 14,
+        "rows_in_destination": 10,
+        "matching_rows": 8,
+        "missing_rows": 3,
+        "different_rows": 3,
+        "extra_rows": 0
+      },
+      "details": {
+        "matching_rows": [
+          {
+            "department_id": "1",
+            "name": "HR",
+            "location": "New York"
+          },
+          {
+            "department_id": "4",
+            "name": "Finance",
+            "location": "Boston"
+          },
+          {
+            "department_id": "5",
+            "name": "Marketing",
+            "location": "Seattle"
+          },
+          {
+            "department_id": "6",
+            "name": "IT",
+            "location": "Austin"
+          },
+          {
+            "department_id": "7",
+            "name": "Admin",
+            "location": "Denver"
+          },
+          {
+            "department_id": "8",
+            "name": "Support",
+            "location": "Miami"
+          },
+          {
+            "department_id": "9",
+            "name": "Legal",
+            "location": "Atlanta"
+          },
+          {
+            "department_id": "10",
+            "name": "Operations",
+            "location": "Dallas"
+          }
+        ],
+        "missing_rows": [
+          {
+            "department_id": "11",
+            "name": "manager",
+            "location": "New York"
+          },
+          {
+            "department_id": "12",
+            "name": "Engineering",
+            "location": "\u2018New Delhi'"
+          },
+          {
+            "department_id": "14",
+            "name": "Finance",
+            "location": "USA"
+          }
+        ],
+        "different_rows": [
+          {
+            "source_row": {
+              "department_id": "2",
+              "name": "Engineering",
+              "location": "San Francisco"
+            },
+            "destination_row": {
+              "department_id": "2",
+              "name": "Engineering",
+              "location": "Tam Francisco"
+            },
+            "differences": {
+              "location": {
+                "source": "San Francisco",
+                "destination": "Tam Francisco"
+              }
+            }
+          },
+          {
+            "source_row": {
+              "department_id": "3",
+              "name": "Sales",
+              "location": "Chicago"
+            },
+            "destination_row": {
+              "department_id": "3",
+              "name": "Sales",
+              "location": "France"
+            },
+            "differences": {
+              "location": {
+                "source": "Chicago",
+                "destination": "France"
+              }
+            }
+          },
+          {
+            "source_row": {
+              "department_id": "3",
+              "name": "Sales",
+              "location": "Chicago"
+            },
+            "destination_row": {
+              "department_id": "3",
+              "name": "Sales",
+              "location": "France"
+            },
+            "differences": {
+              "location": {
+                "source": "Chicago",
+                "destination": "France"
+              }
+            }
+          }
+        ],
+        "extra_rows": []
+      }
+    },
+    "performancereviews": {
+      "success": false,
+      "meta": {
+        "source_schema": "employee_management",
+        "destination_schema": "contractor_management",
+        "table": "performancereviews",
+        "timestamp": "2025-05-02T19:01:10.460643"
+      },
+      "summary": {
+        "rows_in_source": 10,
+        "rows_in_destination": 10,
+        "matching_rows": 7,
+        "missing_rows": 0,
+        "different_rows": 3,
+        "extra_rows": 0
+      },
+      "details": {
+        "matching_rows": [
+          {
+            "review_id": "1",
+            "employee_id": "1",
+            "review_date": "2024-03-15",
+            "score": "85",
+            "comments": "Good work"
+          },
+          {
+            "review_id": "4",
+            "employee_id": "4",
+            "review_date": "2024-03-15",
+            "score": "80",
+            "comments": "Consistent performer"
+          },
+          {
+            "review_id": "5",
+            "employee_id": "5",
+            "review_date": "2024-03-15",
+            "score": "88",
+            "comments": "Great progress"
+          },
+          {
+            "review_id": "6",
+            "employee_id": "6",
+            "review_date": "2024-03-15",
+            "score": "70",
+            "comments": "Needs improvement"
+          },
+          {
+            "review_id": "7",
+            "employee_id": "7",
+            "review_date": "2024-03-15",
+            "score": "92",
+            "comments": "Outstanding"
+          },
+          {
+            "review_id": "8",
+            "employee_id": "8",
+            "review_date": "2024-03-15",
+            "score": "78",
+            "comments": "Above average"
+          },
+          {
+            "review_id": "9",
+            "employee_id": "9",
+            "review_date": "2024-03-15",
+            "score": "83",
+            "comments": "Reliable"
+          }
+        ],
+        "missing_rows": [],
+        "different_rows": [
+          {
+            "source_row": {
+              "review_id": "2",
+              "employee_id": "2",
+              "review_date": "2024-03-15",
+              "score": "90",
+              "comments": "Excellent"
+            },
+            "destination_row": {
+              "review_id": "2",
+              "contractor_id": "2",
+              "review_date": "2024-03-15",
+              "score": "90",
+              "comments": "Superb"
+            },
+            "differences": {
+              "comments": {
+                "source": "Excellent",
+                "destination": "Superb"
+              }
+            }
+          },
+          {
+            "source_row": {
+              "review_id": "3",
+              "employee_id": "3",
+              "review_date": "2024-03-15",
+              "score": "75",
+              "comments": "Satisfactory"
+            },
+            "destination_row": {
+              "review_id": "3",
+              "contractor_id": "3",
+              "review_date": "2024-03-15",
+              "score": "75",
+              "comments": "Satisfy"
+            },
+            "differences": {
+              "comments": {
+                "source": "Satisfactory",
+                "destination": "Satisfy"
+              }
+            }
+          },
+          {
+            "source_row": {
+              "review_id": "10",
+              "employee_id": "10",
+              "review_date": "2024-03-15",
+              "score": "76",
+              "comments": "Can do better"
+            },
+            "destination_row": {
+              "review_id": "10",
+              "contractor_id": "10",
+              "review_date": "2024-03-15",
+              "score": "76",
+              "comments": "\u2018Can't do better'"
+            },
+            "differences": {
+              "comments": {
+                "source": "Can do better",
+                "destination": "\u2018Can't do better'"
+              }
+            }
+          }
+        ],
+        "extra_rows": []
+      }
+    },
     "leaverequests": {
       "success": false,
       "meta": {
         "source_schema": "employee_management",
         "destination_schema": "contractor_management",
         "table": "leaverequests",
-        "timestamp": "2025-05-02T14:50:24.865098"
+        "timestamp": "2025-05-02T19:01:10.462024"
       },
       "summary": {
         "rows_in_source": 10,
@@ -545,254 +910,13 @@
         "extra_rows": []
       }
     },
-    "department": {
-      "success": false,
-      "meta": {
-        "source_schema": "employee_management",
-        "destination_schema": "contractor_management",
-        "table": "department",
-        "timestamp": "2025-05-02T14:50:24.865876"
-      },
-      "summary": {
-        "rows_in_source": 10,
-        "rows_in_destination": 10,
-        "matching_rows": 8,
-        "missing_rows": 0,
-        "different_rows": 2,
-        "extra_rows": 0
-      },
-      "details": {
-        "matching_rows": [
-          {
-            "department_id": "1",
-            "name": "HR",
-            "location": "New York"
-          },
-          {
-            "department_id": "4",
-            "name": "Finance",
-            "location": "Boston"
-          },
-          {
-            "department_id": "5",
-            "name": "Marketing",
-            "location": "Seattle"
-          },
-          {
-            "department_id": "6",
-            "name": "IT",
-            "location": "Austin"
-          },
-          {
-            "department_id": "7",
-            "name": "Admin",
-            "location": "Denver"
-          },
-          {
-            "department_id": "8",
-            "name": "Support",
-            "location": "Miami"
-          },
-          {
-            "department_id": "9",
-            "name": "Legal",
-            "location": "Atlanta"
-          },
-          {
-            "department_id": "10",
-            "name": "Operations",
-            "location": "Dallas"
-          }
-        ],
-        "missing_rows": [],
-        "different_rows": [
-          {
-            "source_row": {
-              "department_id": "2",
-              "name": "Engineering",
-              "location": "San Francisco"
-            },
-            "destination_row": {
-              "department_id": "2",
-              "name": "Engineering",
-              "location": "Tam Francisco"
-            },
-            "differences": {
-              "location": {
-                "source": "San Francisco",
-                "destination": "Tam Francisco"
-              }
-            }
-          },
-          {
-            "source_row": {
-              "department_id": "3",
-              "name": "Sales",
-              "location": "Chicago"
-            },
-            "destination_row": {
-              "department_id": "3",
-              "name": "Sales",
-              "location": "France"
-            },
-            "differences": {
-              "location": {
-                "source": "Chicago",
-                "destination": "France"
-              }
-            }
-          }
-        ],
-        "extra_rows": []
-      }
-    },
-    "performancereviews": {
-      "success": false,
-      "meta": {
-        "source_schema": "employee_management",
-        "destination_schema": "contractor_management",
-        "table": "performancereviews",
-        "timestamp": "2025-05-02T14:50:24.866665"
-      },
-      "summary": {
-        "rows_in_source": 10,
-        "rows_in_destination": 10,
-        "matching_rows": 7,
-        "missing_rows": 0,
-        "different_rows": 3,
-        "extra_rows": 0
-      },
-      "details": {
-        "matching_rows": [
-          {
-            "review_id": "1",
-            "employee_id": "1",
-            "review_date": "2024-03-15",
-            "score": "85",
-            "comments": "Good work"
-          },
-          {
-            "review_id": "4",
-            "employee_id": "4",
-            "review_date": "2024-03-15",
-            "score": "80",
-            "comments": "Consistent performer"
-          },
-          {
-            "review_id": "5",
-            "employee_id": "5",
-            "review_date": "2024-03-15",
-            "score": "88",
-            "comments": "Great progress"
-          },
-          {
-            "review_id": "6",
-            "employee_id": "6",
-            "review_date": "2024-03-15",
-            "score": "70",
-            "comments": "Needs improvement"
-          },
-          {
-            "review_id": "7",
-            "employee_id": "7",
-            "review_date": "2024-03-15",
-            "score": "92",
-            "comments": "Outstanding"
-          },
-          {
-            "review_id": "8",
-            "employee_id": "8",
-            "review_date": "2024-03-15",
-            "score": "78",
-            "comments": "Above average"
-          },
-          {
-            "review_id": "9",
-            "employee_id": "9",
-            "review_date": "2024-03-15",
-            "score": "83",
-            "comments": "Reliable"
-          }
-        ],
-        "missing_rows": [],
-        "different_rows": [
-          {
-            "source_row": {
-              "review_id": "2",
-              "employee_id": "2",
-              "review_date": "2024-03-15",
-              "score": "90",
-              "comments": "Excellent"
-            },
-            "destination_row": {
-              "review_id": "2",
-              "contractor_id": "2",
-              "review_date": "2024-03-15",
-              "score": "90",
-              "comments": "Superb"
-            },
-            "differences": {
-              "comments": {
-                "source": "Excellent",
-                "destination": "Superb"
-              }
-            }
-          },
-          {
-            "source_row": {
-              "review_id": "3",
-              "employee_id": "3",
-              "review_date": "2024-03-15",
-              "score": "75",
-              "comments": "Satisfactory"
-            },
-            "destination_row": {
-              "review_id": "3",
-              "contractor_id": "3",
-              "review_date": "2024-03-15",
-              "score": "75",
-              "comments": "Satisfy"
-            },
-            "differences": {
-              "comments": {
-                "source": "Satisfactory",
-                "destination": "Satisfy"
-              }
-            }
-          },
-          {
-            "source_row": {
-              "review_id": "10",
-              "employee_id": "10",
-              "review_date": "2024-03-15",
-              "score": "76",
-              "comments": "Can do better"
-            },
-            "destination_row": {
-              "review_id": "10",
-              "contractor_id": "10",
-              "review_date": "2024-03-15",
-              "score": "76",
-              "comments": "\u2018Can't do better'"
-            },
-            "differences": {
-              "comments": {
-                "source": "Can do better",
-                "destination": "\u2018Can't do better'"
-              }
-            }
-          }
-        ],
-        "extra_rows": []
-      }
-    },
     "emergencycontacts": {
       "success": false,
       "meta": {
         "source_schema": "employee_management",
         "destination_schema": "contractor_management",
         "table": "emergencycontacts",
-        "timestamp": "2025-05-02T14:50:24.867623"
+        "timestamp": "2025-05-02T19:01:10.463128"
       },
       "summary": {
         "rows_in_source": 10,
@@ -879,13 +1003,13 @@
               "phone_number": "1234567678"
             },
             "differences": {
-              "phone_number": {
-                "source": "1234567890",
-                "destination": "1234567678"
-              },
               "relation": {
                 "source": "Mother",
                 "destination": "Husband"
+              },
+              "phone_number": {
+                "source": "1234567890",
+                "destination": "1234567678"
               }
             }
           },
@@ -915,182 +1039,130 @@
         "extra_rows": []
       }
     },
-    "payroll": {
+    "trainingrecords": {
       "success": false,
       "meta": {
         "source_schema": "employee_management",
         "destination_schema": "contractor_management",
-        "table": "payroll",
-        "timestamp": "2025-05-02T14:50:24.868555"
+        "table": "trainingrecords",
+        "timestamp": "2025-05-02T19:01:10.464061"
       },
       "summary": {
         "rows_in_source": 10,
         "rows_in_destination": 10,
-        "matching_rows": 3,
+        "matching_rows": 7,
         "missing_rows": 0,
-        "different_rows": 7,
+        "different_rows": 3,
         "extra_rows": 0
       },
       "details": {
         "matching_rows": [
           {
-            "payroll_id": "2",
-            "employee_id": "2",
-            "payment_date": "2024-03-31",
-            "amount": "6000.00"
+            "training_id": "1",
+            "employee_id": "1",
+            "course_name": "Time Management",
+            "completed_date": "2024-02-01"
           },
           {
-            "payroll_id": "4",
-            "employee_id": "4",
-            "payment_date": "2024-03-31",
-            "amount": "7000.00"
+            "training_id": "3",
+            "employee_id": "3",
+            "course_name": "Agile Basics",
+            "completed_date": "2024-02-03"
           },
           {
-            "payroll_id": "8",
+            "training_id": "5",
+            "employee_id": "5",
+            "course_name": "Advanced Excel",
+            "completed_date": "2024-02-05"
+          },
+          {
+            "training_id": "6",
+            "employee_id": "6",
+            "course_name": "Presentation Skills",
+            "completed_date": "2024-02-06"
+          },
+          {
+            "training_id": "8",
             "employee_id": "8",
-            "payment_date": "2024-03-31",
-            "amount": "6800.00"
+            "course_name": "Security Essentials",
+            "completed_date": "2024-02-08"
+          },
+          {
+            "training_id": "9",
+            "employee_id": "9",
+            "course_name": "Data Analysis",
+            "completed_date": "2024-02-09"
+          },
+          {
+            "training_id": "10",
+            "employee_id": "10",
+            "course_name": "Conflict Management",
+            "completed_date": "2024-02-10"
           }
         ],
         "missing_rows": [],
         "different_rows": [
           {
             "source_row": {
-              "payroll_id": "1",
-              "employee_id": "1",
-              "payment_date": "2024-03-31",
-              "amount": "5000.00"
+              "training_id": "2",
+              "employee_id": "2",
+              "course_name": "Leadership",
+              "completed_date": "2024-02-02"
             },
             "destination_row": {
-              "payroll_id": "1",
-              "contractor_id": "1",
-              "payment_date": "2024-03-31",
-              "amount": "9000.00"
+              "training_id": "2",
+              "contractor_id": "2",
+              "course_name": "Python",
+              "completed_date": "2024-02-02"
             },
             "differences": {
-              "amount": {
-                "source": "5000.00",
-                "destination": "9000.00"
+              "course_name": {
+                "source": "Leadership",
+                "destination": "Python"
               }
             }
           },
           {
             "source_row": {
-              "payroll_id": "3",
-              "employee_id": "3",
-              "payment_date": "2024-03-31",
-              "amount": "4500.00"
+              "training_id": "4",
+              "employee_id": "4",
+              "course_name": "SQL Mastery",
+              "completed_date": "2024-02-04"
             },
             "destination_row": {
-              "payroll_id": "3",
-              "contractor_id": "3",
-              "payment_date": "2024-03-31",
-              "amount": "4900.00"
+              "training_id": "4",
+              "contractor_id": "4",
+              "course_name": "Java Mastery",
+              "completed_date": "2024-02-04"
             },
             "differences": {
-              "amount": {
-                "source": "4500.00",
-                "destination": "4900.00"
+              "course_name": {
+                "source": "SQL Mastery",
+                "destination": "Java Mastery"
               }
             }
           },
           {
             "source_row": {
-              "payroll_id": "5",
-              "employee_id": "5",
-              "payment_date": "2024-03-31",
-              "amount": "5200.00"
-            },
-            "destination_row": {
-              "payroll_id": "5",
-              "contractor_id": "5",
-              "payment_date": "2024-03-31",
-              "amount": "5220.00"
-            },
-            "differences": {
-              "amount": {
-                "source": "5200.00",
-                "destination": "5220.00"
-              }
-            }
-          },
-          {
-            "source_row": {
-              "payroll_id": "6",
-              "employee_id": "6",
-              "payment_date": "2024-03-31",
-              "amount": "6100.00"
-            },
-            "destination_row": {
-              "payroll_id": "6",
-              "contractor_id": "6",
-              "payment_date": "2024-03-31",
-              "amount": "9100.00"
-            },
-            "differences": {
-              "amount": {
-                "source": "6100.00",
-                "destination": "9100.00"
-              }
-            }
-          },
-          {
-            "source_row": {
-              "payroll_id": "7",
+              "training_id": "7",
               "employee_id": "7",
-              "payment_date": "2024-03-31",
-              "amount": "4900.00"
+              "course_name": "Cloud Basics",
+              "completed_date": "2024-02-07"
             },
             "destination_row": {
-              "payroll_id": "7",
+              "training_id": "7",
               "contractor_id": "7",
-              "payment_date": "2024-03-31",
-              "amount": "2900.00"
+              "course_name": "docker",
+              "completed_date": "2024-08-01"
             },
             "differences": {
-              "amount": {
-                "source": "4900.00",
-                "destination": "2900.00"
-              }
-            }
-          },
-          {
-            "source_row": {
-              "payroll_id": "9",
-              "employee_id": "9",
-              "payment_date": "2024-03-31",
-              "amount": "4700.00"
-            },
-            "destination_row": {
-              "payroll_id": "9",
-              "contractor_id": "9",
-              "payment_date": "2024-03-31",
-              "amount": "4710.00"
-            },
-            "differences": {
-              "amount": {
-                "source": "4700.00",
-                "destination": "4710.00"
-              }
-            }
-          },
-          {
-            "source_row": {
-              "payroll_id": "10",
-              "employee_id": "10",
-              "payment_date": "2024-03-31",
-              "amount": "7300.00"
-            },
-            "destination_row": {
-              "payroll_id": "10",
-              "contractor_id": "10",
-              "payment_date": "2024-03-31",
-              "amount": "7390.00"
-            },
-            "differences": {
-              "amount": {
-                "source": "7300.00",
-                "destination": "7390.00"
+              "completed_date": {
+                "source": "2024-02-07",
+                "destination": "2024-08-01"
+              },
+              "course_name": {
+                "source": "Cloud Basics",
+                "destination": "docker"
               }
             }
           }
@@ -1101,18 +1173,18 @@
   },
   "summary": {
     "total_tables": 8,
-    "total_rows_source": 80,
+    "total_rows_source": 90,
     "total_rows_destination": 80,
-    "total_matching_rows": 54,
-    "total_missing_rows": 0,
-    "total_different_rows": 26,
+    "total_matching_rows": 56,
+    "total_missing_rows": 7,
+    "total_different_rows": 27,
     "total_extra_rows": 0,
     "all_matched": false
   },
   "mismatched_tables": {
     "employee_management_only": [
-      "transactionhistory_employee",
-      "employee"
+      "employee",
+      "transactionhistory_employee"
     ],
     "contractor_management_only": [
       "contractor",
