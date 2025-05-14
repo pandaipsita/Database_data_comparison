@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Migration Validation Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Database Migration Validation Dashboard</h1>
+        </header>
+
+        <main>
+            <!-- Initial validation form (visible by default) -->
+            <div id="validation-form-container" class="validation-form-container">
+                <h2>New Validation</h2>
+                <form id="validation-form" enctype="multipart/form-data">
+                    <!-- Source File Upload -->
+                    <div class="form-group">
+                        <label for="source-file-upload">Source Database Files:</label>
+                        <div id="source-drop-area" class="drop-area">
+                            <p>Drag & drop source files here or</p>
+                            <button type="button" id="source-upload-btn" class="button file-upload-btn">Browse</button>
+                            <input type="file" id="source-file-upload" name="source_files" multiple hidden>
+                        </div>
+                        <div id="source-selected-files" class="selected-files"></div>
+                    </div>
+
+                    <!-- Destination File Upload -->
+                    <div class="form-group">
+                        <label for="dest-file-upload">Destination Database Files:</label>
+                        <div id="dest-drop-area" class="drop-area">
+                            <p>Drag & drop destination files here or</p>
+                            <button type="button" id="dest-upload-btn" class="button file-upload-btn">Browse</button>
+                            <input type="file" id="dest-file-upload" name="dest_files" multiple hidden>
+                        </div>
+                        <div id="dest-selected-files" class="selected-files"></div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="batch-size">Batch Size (Tables per batch):</label>
+                            <input type="range" id="batch-size-slider" min="1" max="500" value="100">
+                            <div class="slider-value-display">
+                                <input type="number" id="batch-size" value="100" min="1" max="500">
+                                <span class="slider-hint">1-500 tables</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="chunk-size">Chunk Size (Rows per chunk):</label>
+                            <input type="range" id="chunk-size-slider" min="1000" max="1000" value="1000" disabled>
+                            <div class="slider-value-display">
+                                <input type="number" id="chunk-size" value="1000" readonly>
+                                <span id="chunk-size-value" class="value-display">1000 rows</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="button primary">Start Validation</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Loading overlay for validation in progress -->
+            <div id="validation-progress" class="validation-progress" style="display: none;">
+                <div class="progress-container">
+                    <h3>Validation in Progress</h3>
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                    <div id="progress-text" class="progress-text">0%</div>
+                    <p id="current-table" class="current-table"></p>
+                </div>
+            </div>
+
+            <!-- Results section -->
+            <div id="results" class="results-container" style="display: none;">
+                <h2>Validation Results</h2>
+                <table id="results-table" class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Table Name</th>
+                            <th>Source Count</th>
+                            <th>Destination Count</th>
+                            <th>Status</th>
+                            <th>Processing Time</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="form-actions">
+                    <button type="button" id="new-validation-btn" class="button primary">New Validation</button>
+                    <button type="button" id="view-report-btn" class="button">View Full Report</button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Database Migration Validation Tool © 2025</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

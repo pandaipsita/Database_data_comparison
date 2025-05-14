@@ -54,21 +54,62 @@ def store_data(data_chunks, config):
         embedding_function=embedding_function
     )
 
-    # Prepare data for ChromaDB
-    documents = [chunk["content"] for chunk in data_chunks]
-    metadatas = [chunk["metadata"] for chunk in data_chunks]
-    ids = [f"{chunk['metadata']['schema']}_{chunk['metadata']['table']}_{chunk['metadata']['row_id']}" for chunk in
-           data_chunks]
+    # Group chunks by file_id for efficient deletion of existing data
+    chunks_by_file = {}
+    for chunk in data_chunks:
+        file_id = chunk["metadata"].get("file_id")
+        if file_id:
+            if file_id not in chunks_by_file:
+                chunks_by_file[file_id] = []
+            chunks_by_file[file_id].append(chunk)
 
-    # Add documents to collection in batches to avoid memory issues
-    batch_size = 100
-    for i in range(0, len(documents), batch_size):
-        end = min(i + batch_size, len(documents))
-        collection.add(
-            documents=documents[i:end],
-            metadatas=metadatas[i:end],
-            ids=ids[i:end]
-        )
+    # Process each file_id separately
+    for file_id, file_chunks in chunks_by_file.items():
+        # Delete existing chunks for this file_id
+        existing = collection.get(where={"file_id": file_id})
+        if existing["ids"]:
+            collection.delete(ids=existing["ids"])
 
-    print(f"✅ Stored {len(data_chunks)} data chunks in ChromaDB.")
+        # Prepare data for ChromaDB
+        documents = [chunk["content"] for chunk in file_chunks]
+        metadatas = [chunk["metadata"] for chunk in file_chunks]
+        ids = [
+            f"{chunk['metadata'].get('schema', 'default')}_{chunk['metadata'].get('table', 'default')}_{chunk['metadata'].get('row_id', i)}"
+            for i, chunk in enumerate(file_chunks)]
+
+        # Add documents to collection in batches to avoid memory issues
+        batch_size = 100
+        for i in range(0, len(documents), batch_size):
+            end = min(i + batch_size, len(documents))
+            collection.add(
+                documents=documents[i:end],
+                metadatas=metadatas[i:end],
+                ids=ids[i:end]
+            )
+
+        print(f"✅ Processed file_id {file_id}: deleted existing chunks and stored {len(file_chunks)} new chunks")
+
+    # Handle chunks without file_id
+    no_file_chunks = [chunk for chunk in data_chunks if "file_id" not in chunk["metadata"]]
+    if no_file_chunks:
+        # Prepare data for ChromaDB
+        documents = [chunk["content"] for chunk in no_file_chunks]
+        metadatas = [chunk["metadata"] for chunk in no_file_chunks]
+        ids = [
+            f"{chunk['metadata'].get('schema', 'default')}_{chunk['metadata'].get('table', 'default')}_{chunk['metadata'].get('row_id', i + len(data_chunks))}"
+            for i, chunk in enumerate(no_file_chunks)]
+
+        # Add documents to collection in batches
+        batch_size = 100
+        for i in range(0, len(documents), batch_size):
+            end = min(i + batch_size, len(documents))
+            collection.add(
+                documents=documents[i:end],
+                metadatas=metadatas[i:end],
+                ids=ids[i:end]
+            )
+
+        print(f"✅ Stored {len(no_file_chunks)} data chunks without file_id in ChromaDB.")
+
+    print(f"✅ Total: Stored {len(data_chunks)} data chunks in ChromaDB.")
     return collection

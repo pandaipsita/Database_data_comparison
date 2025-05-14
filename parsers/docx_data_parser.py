@@ -2,29 +2,30 @@ from docx import Document
 import re
 import pandas as pd
 import json
+import os
 
 
-def extract_insert_statements(docx_path):
+def extract_insert_statements_from_text(file_path):
     """
-    Extract INSERT statements from a Word document
+    Extract INSERT statements from a plain text or SQL file
 
     Args:
-        docx_path: Path to Word document
+        file_path: Path to text/SQL file
 
     Returns:
         list: List of dictionaries with INSERT statement details
     """
-    doc = Document(docx_path)
-    full_text = "\n".join([para.text for para in doc.paragraphs])
-
     # Extract schema name from document filename
-    import os
-    schema_name = os.path.basename(docx_path).split('.')[0]
+    schema_name = os.path.basename(file_path).split('.')[0]
+
+    # Read file content
+    with open(file_path, 'r', encoding='utf-8') as file:
+        full_text = file.read()
 
     # Find all INSERT statements
     insert_statements = re.findall(r"(INSERT\s+INTO[\s\S]+?;)", full_text, re.IGNORECASE)
 
-    print(f"Found {len(insert_statements)} INSERT statements in {docx_path}")
+    print(f"Found {len(insert_statements)} INSERT statements in {file_path}")
 
     parsed_inserts = []
     for stmt in insert_statements:
@@ -98,8 +99,118 @@ def extract_insert_statements(docx_path):
                         "raw_statement": stmt
                     })
 
-    print(f"Extracted {len(parsed_inserts)} rows from INSERT statements in {docx_path}")
+    print(f"Extracted {len(parsed_inserts)} rows from INSERT statements in {file_path}")
     return parsed_inserts
+
+
+def extract_insert_statements(file_path):
+    """
+    Extract INSERT statements from a document, automatically detecting file type
+
+    Args:
+        file_path: Path to document (docx, txt, or sql)
+
+    Returns:
+        list: List of dictionaries with INSERT statement details
+    """
+    # Determine file type based on extension
+    file_extension = file_path.lower().split('.')[-1]
+
+    # Extract schema name from document filename
+    import os
+    schema_name = os.path.basename(file_path).split('.')[0]
+
+    if file_extension == 'docx':
+        # Process Word document
+        doc = Document(file_path)
+        full_text = "\n".join([para.text for para in doc.paragraphs])
+
+        # Find all INSERT statements
+        insert_statements = re.findall(r"(INSERT\s+INTO[\s\S]+?;)", full_text, re.IGNORECASE)
+
+        print(f"Found {len(insert_statements)} INSERT statements in {file_path}")
+
+        parsed_inserts = []
+        for stmt in insert_statements:
+            # Extract table name
+            table_match = re.search(r"INSERT\s+INTO\s+(?:(\w+)\.)?(\w+)", stmt, re.IGNORECASE)
+            if not table_match:
+                continue
+
+            schema_prefix = table_match.group(1) or schema_name
+            table_name = table_match.group(2)
+
+            # Extract column names if present
+            column_match = re.search(r"INSERT\s+INTO\s+[\w\.]+\s*\(([^)]+)\)", stmt, re.IGNORECASE)
+            columns = []
+            if column_match:
+                # Extract and clean column names
+                columns = [col.strip().strip('`[]"\' ') for col in column_match.group(1).split(',')]
+                # Print the extracted columns for debugging
+                print(f"  Extracted columns for {table_name}: {columns}")
+            else:
+                print(f"  No columns found in INSERT statement for {table_name}")
+
+            # Extract values section
+            values_section_match = re.search(r"VALUES\s*(.*?);", stmt, re.IGNORECASE | re.DOTALL)
+            if values_section_match:
+                values_section = values_section_match.group(1)
+                # Find all value sets
+                value_sets = re.findall(r"\(([^)]+)\)", values_section)
+
+                for values_str in value_sets:
+                    # Parse values
+                    values = []
+                    in_string = False
+                    current_value = ""
+
+                    for char in values_str:
+                        if char == "'" and (len(current_value) == 0 or current_value[-1] != '\\'):
+                            in_string = not in_string
+                            current_value += char
+                        elif char == ',' and not in_string:
+                            values.append(current_value.strip())
+                            current_value = ""
+                        else:
+                            current_value += char
+
+                    # Add the last value
+                    if current_value.strip():
+                        values.append(current_value.strip())
+
+                    # Clean values
+                    cleaned_values = []
+                    for val in values:
+                        val = val.strip()
+                        if val.startswith("'") and val.endswith("'"):
+                            val = val[1:-1]  # Remove surrounding quotes
+                        elif val.lower() == "null":
+                            val = None
+                        cleaned_values.append(val)
+
+                    # If no columns were specified, create generic ones
+                    if not columns:
+                        columns = [f"column_{i + 1}" for i in range(len(cleaned_values))]
+
+                    # Create data entry
+                    if len(columns) == len(cleaned_values):
+                        parsed_inserts.append({
+                            "schema_name": schema_prefix,
+                            "table_name": table_name,
+                            "columns": columns,
+                            "values": cleaned_values,
+                            "raw_statement": stmt
+                        })
+
+        print(f"Extracted {len(parsed_inserts)} rows from INSERT statements in {file_path}")
+        return parsed_inserts
+
+    elif file_extension in ['txt', 'sql']:
+        # Use the text file extraction function
+        return extract_insert_statements_from_text(file_path)
+    else:
+        print(f"Unsupported file type: {file_extension}")
+        return []
 
 
 def inserts_to_dataframe(insert_list):

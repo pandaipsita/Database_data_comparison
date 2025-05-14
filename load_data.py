@@ -16,7 +16,8 @@ def main():
         config = yaml.safe_load(f)
 
     data_dir = config.get("data_directory", "./data_validation")
-    files = sorted([f for f in os.listdir(data_dir) if f.endswith(".docx")])
+    # files = sorted([f for f in os.listdir(data_dir) if f.endswith(".docx")])
+    files = sorted([f for f in os.listdir(data_dir) if f.endswith((".docx", ".txt", ".sql"))])
 
     all_inserts = []
 
