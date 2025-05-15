@@ -7,17 +7,15 @@ import threading
 import datetime
 import traceback
 from werkzeug.utils import secure_filename
+import shutil
 
-# Debug imports
 print(f"Current working directory: {os.getcwd()}")
 print(f"Python path: {sys.path}")
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 try:
-    # Import the entire module instead of just the main function
     import generate_report
-
     print("Successfully imported generate_report module")
 except Exception as e:
     print(f"Failed to import generate_report: {e}")
@@ -28,55 +26,40 @@ UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__f
 ALLOWED_EXTENSIONS = {'docx', 'sql', 'txt'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Create separate folders for source and destination files
 SOURCE_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, 'source')
 DEST_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, 'destination')
 os.makedirs(SOURCE_UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(DEST_UPLOAD_FOLDER, exist_ok=True)
 
-# Track validation status
 validation_status = {}
-
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 
 def load_config():
     config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'config.yaml')
     with open(config_path, 'r') as f:
         return yaml.safe_load(f)
 
-
 def extract_schema_from_filename(filename):
-    """Extract schema name from filename"""
-    # Remove file extension
-    name_without_ext = os.path.splitext(filename)[0]
-
-    # Handle common patterns
-    if 'employee_management' in name_without_ext.lower():
-        return 'employee_management'
-    elif 'contractor_management' in name_without_ext.lower():
-        return 'contractor_management'
-    else:
-        # Return the full name without extension
-        return name_without_ext
-
+    name_without_ext = os.path.splitext(filename)[0].lower()
+    config = load_config()
+    for schema in config.get('schemas', []):
+        if schema.lower() in name_without_ext:
+            return schema
+    return name_without_ext
 
 def discover_tables_from_files(file_paths):
-    """Discover tables from uploaded files"""
     tables = set()
-
-    # Import parser
     try:
         from parsers.docx_data_parser import extract_insert_statements
     except ImportError as e:
         print(f"Error importing parser: {e}")
         return list(tables)
 
-    # Extract tables from files
     for file_path in file_paths:
         try:
             print(f"Processing file: {os.path.basename(file_path)}")
@@ -87,24 +70,19 @@ def discover_tables_from_files(file_paths):
                     tables.add(table_name)
         except Exception as e:
             print(f"Error processing file {file_path}: {e}")
-
     print(f"Found {len(tables)} tables")
     return sorted(list(tables))
-
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-
-@ app.route('/api/run-validation', methods=['POST'])
-
-
+@app.route('/api/run-validation', methods=['POST'])
 def run_validation():
     try:
-        # Handle source file uploads
         source_files = []
         source_file_paths = []
+        source_unsupported = []
         if 'source_files' in request.files:
             files = request.files.getlist('source_files')
             for file in files:
@@ -114,10 +92,12 @@ def run_validation():
                     file.save(filepath)
                     source_files.append(filename)
                     source_file_paths.append(filepath)
+                elif file:
+                    source_unsupported.append(file.filename)
 
-        # Handle destination file uploads
         dest_files = []
         dest_file_paths = []
+        dest_unsupported = []
         if 'dest_files' in request.files:
             files = request.files.getlist('dest_files')
             for file in files:
@@ -127,22 +107,30 @@ def run_validation():
                     file.save(filepath)
                     dest_files.append(filename)
                     dest_file_paths.append(filepath)
+                elif file:
+                    dest_unsupported.append(file.filename)
 
-        # Validate files were uploaded
+        if source_unsupported or dest_unsupported:
+            unsupported_msg = []
+            if source_unsupported:
+                unsupported_msg.append(f"source files: {', '.join(source_unsupported)}")
+            if dest_unsupported:
+                unsupported_msg.append(f"destination files: {', '.join(dest_unsupported)}")
+            return jsonify({
+                'success': False,
+                'error': f"Unsupported file types detected in {' and '.join(unsupported_msg)}. Allowed types are: {', '.join(f'.{ext}' for ext in ALLOWED_EXTENSIONS)}"
+            })
+
         if not source_files or not dest_files:
             return jsonify({
                 'success': False,
                 'error': 'Both source and destination files are required'
             })
 
-        # Get form data
         batch_size = int(request.form.get('batch_size', 100))
         chunk_size = int(request.form.get('chunk_size', 1000))
-
-        # Create run ID
         run_id = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
-        # Initialize status
         validation_status[run_id] = {
             'status': 'running',
             'progress': 0,
@@ -151,10 +139,8 @@ def run_validation():
             'results': []
         }
 
-        # Load base config
         config = load_config()
 
-        # Extract schema names from filenames
         source_schema = None
         dest_schema = None
 
@@ -170,14 +156,12 @@ def run_validation():
                 dest_schema = extracted
                 break
 
-        # Default to config values if not found
         source_schema = source_schema or config.get('source-schema', 'employee_management')
         dest_schema = dest_schema or config.get('dest-schema', 'contractor_management')
 
         print(f"Using source schema: {source_schema}")
         print(f"Using destination schema: {dest_schema}")
 
-        # Discover tables from uploaded files
         try:
             print(f"Discovering tables from uploaded files")
             source_tables = set(discover_tables_from_files(source_file_paths))
@@ -191,63 +175,41 @@ def run_validation():
             if not selected_tables:
                 validation_status[run_id]['status'] = 'failed'
                 validation_status[run_id]['error'] = f'No common tables found between source and destination files'
-                return jsonify({
-                    'success': True,
-                    'run_id': run_id
-                })
+                return jsonify({'success': True, 'run_id': run_id})
         except Exception as e:
             error_msg = f'Error discovering tables: {str(e)}'
             print(error_msg)
             validation_status[run_id]['status'] = 'failed'
             validation_status[run_id]['error'] = error_msg
-            return jsonify({
-                'success': True,
-                'run_id': run_id
-            })
+            return jsonify({'success': True, 'run_id': run_id})
 
-        # Extract file types from uploaded files
-        file_types = set()
-        for filename in source_files + dest_files:
-            ext = filename.rsplit('.', 1)[1].lower()
-            file_types.add(ext)
+        file_types = {filename.rsplit('.', 1)[1].lower() for filename in source_files + dest_files}
 
-        # Create temporary directories for processing using schema names
         temp_source_dir = os.path.join(UPLOAD_FOLDER, f'{source_schema}_{run_id}')
         temp_dest_dir = os.path.join(UPLOAD_FOLDER, f'{dest_schema}_{run_id}')
         os.makedirs(temp_source_dir, exist_ok=True)
         os.makedirs(temp_dest_dir, exist_ok=True)
 
-        # Copy uploaded files to temporary directories
-        import shutil
         for src_file in source_file_paths:
             shutil.copy2(src_file, temp_source_dir)
         for dest_file in dest_file_paths:
             shutil.copy2(dest_file, temp_dest_dir)
 
-        # Create a modified config with correct paths
         runtime_config = config.copy()
-
-        # Update schemas in config
         runtime_config['schemas'] = [source_schema, dest_schema]
-
-        # Update schema paths to point to uploaded files (temporary directories)
         runtime_config['schema_paths'] = {
             source_schema: temp_source_dir,
             dest_schema: temp_dest_dir
         }
-
-        # Update data directory to upload folder
         runtime_config['data_directory'] = UPLOAD_FOLDER
-
-        # Add additional runtime values
         runtime_config.update({
             'batch_size': batch_size,
             'chunk_size': chunk_size,
             'use_direct_comparison': True,
             'selected_tables': selected_tables,
             'file_types': list(file_types),
-            'source_files': source_file_paths,  # Keep original paths
-            'dest_files': dest_file_paths,  # Keep original paths
+            'source_files': source_file_paths,
+            'dest_files': dest_file_paths,
             'uploaded_files': source_file_paths + dest_file_paths,
             'temp_dirs': {
                 'source': temp_source_dir,
@@ -255,10 +217,8 @@ def run_validation():
             }
         })
 
-        # Run validation in background thread
         def run_validation_thread():
             try:
-                # Update progress
                 validation_status[run_id]['current_table'] = f'Found {len(selected_tables)} common tables'
                 validation_status[run_id]['progress'] = 10
 
@@ -268,12 +228,8 @@ def run_validation():
                 print(f"  - Schema paths: {runtime_config['schema_paths']}")
                 print(f"  - Selected tables: {runtime_config['selected_tables']}")
 
-                # Call the main function from generate_report module with modified config
                 result = generate_report.main(runtime_config)
 
-                print(f"Report generation result: {result}")
-
-                # Clean up temporary directories
                 try:
                     shutil.rmtree(temp_source_dir)
                     shutil.rmtree(temp_dest_dir)
@@ -287,43 +243,36 @@ def run_validation():
                     validation_status[run_id]['html_report'] = result.get('html_report')
                     validation_status[run_id]['json_report'] = result.get('json_report')
 
-                    # Extract results from report data
                     if result.get('json_report'):
                         try:
                             with open(result['json_report'], 'r') as f:
                                 report_data = json.load(f)
-
                             table_comparisons = report_data.get('table_comparisons', {})
                             results = []
-
                             for table_name, table_data in table_comparisons.items():
                                 summary = table_data.get('summary', {})
                                 results.append({
                                     'table_name': table_name,
                                     'source_count': summary.get('rows_in_source', 0),
                                     'destination_count': summary.get('rows_in_destination', 0),
-                                    'match': summary.get('has_differences', False) == False,
+                                    'match': not summary.get('has_differences', False),
                                     'matching_rows': summary.get('matching_rows', 0),
                                     'different_rows': summary.get('different_rows', 0),
                                     'missing_rows': summary.get('missing_rows', 0),
                                     'processing_time': 1.0
                                 })
-
                             validation_status[run_id]['results'] = results
                             validation_status[run_id]['report_data'] = report_data
                         except Exception as e:
                             print(f"Error reading report data: {e}")
                 else:
                     validation_status[run_id]['status'] = 'failed'
-                    validation_status[run_id]['error'] = result.get('error',
-                                                                    'Unknown error') if result else 'Report generation returned None'
+                    validation_status[run_id]['error'] = result.get('error', 'Unknown error') if result else 'Report generation returned None'
             except Exception as e:
                 error_msg = f"Error during validation: {str(e)}\n{traceback.format_exc()}"
                 print(error_msg)
                 validation_status[run_id]['status'] = 'failed'
                 validation_status[run_id]['error'] = str(e)
-
-                # Clean up temp directories on error
                 try:
                     if os.path.exists(temp_source_dir):
                         shutil.rmtree(temp_source_dir)
@@ -335,19 +284,12 @@ def run_validation():
         thread = threading.Thread(target=run_validation_thread)
         thread.start()
 
-        return jsonify({
-            'success': True,
-            'run_id': run_id
-        })
+        return jsonify({'success': True, 'run_id': run_id})
 
     except Exception as e:
         error_msg = f"Error in run_validation: {str(e)}\n{traceback.format_exc()}"
         print(error_msg)
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        })
-
+        return jsonify({'success': False, 'error': str(e)})
 
 @app.route('/reports/<report_id>')
 def view_report(report_id):
@@ -357,7 +299,6 @@ def view_report(report_id):
             'validation_reports',
             f'validation_report_{report_id}.html'
         )
-
         if os.path.exists(report_path):
             return send_file(report_path)
         else:
@@ -365,6 +306,5 @@ def view_report(report_id):
     except Exception as e:
         return str(e), 500
 
-
 if __name__ == '__main__':
-    app.run(debug=True, port=5002)
+    app.run(debug=True, port=5003)

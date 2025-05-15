@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Database Migration Validation Dashboard</title>
+    <title>Database/Data Validation Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="app-container">
         <header>
-            <h1>Database Migration Validation Dashboard</h1>
+            <h1>Database/Data Validation Dashboard</h1>
         </header>
 
         <main>
@@ -19,7 +19,7 @@
                 <form id="validation-form" enctype="multipart/form-data">
                     <!-- Source File Upload -->
                     <div class="form-group">
-                        <label for="source-file-upload">Source Database Files:</label>
+                        <label for="source-file-upload">Source Database Files: (Supported File Types - .sql, .docx, .txt)</label>
                         <div id="source-drop-area" class="drop-area">
                             <p>Drag & drop source files here or</p>
                             <button type="button" id="source-upload-btn" class="button file-upload-btn">Browse</button>
@@ -30,7 +30,7 @@
 
                     <!-- Destination File Upload -->
                     <div class="form-group">
-                        <label for="dest-file-upload">Destination Database Files:</label>
+                        <label for="dest-file-upload">Destination Database Files: (Supported File Types - .sql, .docx, .txt)</label>
                         <div id="dest-drop-area" class="drop-area">
                             <p>Drag & drop destination files here or</p>
                             <button type="button" id="dest-upload-btn" class="button file-upload-btn">Browse</button>
@@ -51,10 +51,11 @@
 
                         <div class="form-group">
                             <label for="chunk-size">Chunk Size (Rows per chunk):</label>
-                            <input type="range" id="chunk-size-slider" min="1000" max="1000" value="1000" disabled>
+                            <input type="range" id="chunk-size-slider" min="1" max="1000" value="1000" disabled>
                             <div class="slider-value-display">
-                                <input type="number" id="chunk-size" value="1000" readonly>
-                                <span id="chunk-size-value" class="value-display">1000 rows</span>
+                                <input type="number" id="chunk-size" value="1000" min="1" max="1000">
+                                <span class="slider-hint">1-1000 rows</span>
+                                <!-- <span id="chunk-size-value" class="value-display">1000 rows</span> -->
                             </div>
                         </div>
                     </div>
@@ -100,7 +101,7 @@
         </main>
 
         <footer>
-            <p>Database Migration Validation Tool © 2025</p>
+            <p>Database/Data Validation Tool © 2025</p>
         </footer>
     </div>
 

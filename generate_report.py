@@ -1,3 +1,5 @@
+
+
 import glob
 import os
 import re
@@ -29,9 +31,23 @@ from langchain.chains import LLMChain
 def process_single_file(file_path):
     try:
         print(f"📄 Processing file: {file_path}")
-        return extract_insert_statements(file_path)
+        file_extension = file_path.lower().split('.')[-1]
+        print(f"  File type: {file_extension}")
+
+        from parsers.docx_data_parser import extract_insert_statements
+        results = extract_insert_statements(file_path)
+
+        print(f"  Extracted {len(results)} INSERT statements")
+        if results and len(results) > 0:
+            # Show sample of first result for debugging
+            first = results[0]
+            print(f"  Sample - Table: {first.get('table_name')}, Columns: {first.get('columns', [])[:3]}...")
+
+        return results
     except Exception as e:
         print(f"❌ Error processing file {file_path}: {e}")
+        import traceback
+        traceback.print_exc()
         return []
 
 
@@ -83,7 +99,7 @@ def generate_html_report(data_comparison):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Database Migration Validation Report</title>
+    <title>Database/Data Validation Report</title>
 
     <style>
         :root {{
@@ -451,7 +467,7 @@ def generate_html_report(data_comparison):
 <body>
     <div class="container">
         <header>
-            <h1>Database Migration Validation Report</h1>
+            <h1>Database/Data Validation Report</h1>
             <p>Comparing data between {meta.get('source_schema', 'source')} and {meta.get('destination_schema', 'destination')} database schemas</p>
         </header>
 
@@ -706,7 +722,7 @@ def generate_html_report(data_comparison):
         </div>
 
         <footer>
-            <p>Generated on """ + datetime.datetime.now().strftime("%B %d, %Y") + """ | Database Migration Validation Report</p>
+            <p>Generated on """ + datetime.datetime.now().strftime("%B %d, %Y") + """ | Database/Data Validation Report</p>
         </footer>
     </div>
 
@@ -766,7 +782,7 @@ def generate_html_report(data_comparison):
 
 def get_common_table_list(schema1, schema2, config):
     """
-    Get list of common tables between schemas by discovering tables in DOCX files.
+    Get list of common tables between schemas by discovering tables in all supported files.
     """
     try:
         # Check if schema_paths is defined in config
@@ -801,12 +817,16 @@ def get_common_table_list(schema1, schema2, config):
         # Find tables in schema1
         schema1_tables = set()
         if os.path.exists(schema1_dir) and os.path.isdir(schema1_dir):
-            # Find all DOCX files in schema directory
-            docx_files = glob.glob(os.path.join(schema1_dir, "**/*.docx"), recursive=True)
-            print(f"Found {len(docx_files)} DOCX files in {schema1_dir}")
+            # Find all supported files in schema directory - UPDATED TO INCLUDE SQL AND TXT
+            supported_files = []
+            for ext in ['docx', 'sql', 'txt']:
+                supported_files.extend(glob.glob(os.path.join(schema1_dir, f"**/*.{ext}"), recursive=True))
 
-            for file_path in docx_files:
+            print(f"Found {len(supported_files)} supported files in {schema1_dir}")
+
+            for file_path in supported_files:
                 try:
+                    print(f"Processing {file_path}")
                     inserts = extract_insert_statements(file_path)
                     for insert in inserts:
                         # Extract table name from the dictionary
@@ -819,12 +839,16 @@ def get_common_table_list(schema1, schema2, config):
         # Find tables in schema2
         schema2_tables = set()
         if os.path.exists(schema2_dir) and os.path.isdir(schema2_dir):
-            # Find all DOCX files in schema directory
-            docx_files = glob.glob(os.path.join(schema2_dir, "**/*.docx"), recursive=True)
-            print(f"Found {len(docx_files)} DOCX files in {schema2_dir}")
+            # Find all supported files in schema directory - UPDATED TO INCLUDE SQL AND TXT
+            supported_files = []
+            for ext in ['docx', 'sql', 'txt']:
+                supported_files.extend(glob.glob(os.path.join(schema2_dir, f"**/*.{ext}"), recursive=True))
 
-            for file_path in docx_files:
+            print(f"Found {len(supported_files)} supported files in {schema2_dir}")
+
+            for file_path in supported_files:
                 try:
+                    print(f"Processing {file_path}")
                     inserts = extract_insert_statements(file_path)
                     for insert in inserts:
                         # Extract table name from the dictionary
@@ -850,7 +874,7 @@ def get_common_table_list(schema1, schema2, config):
         print(f"⚠️ Error discovering common tables: {e}")
         import traceback
         traceback.print_exc()
-        return []  # Return empty list on error
+        return [] # Return empty list on error
 
 
 def get_schema_only_tables(schema1, schema2, config):
@@ -891,11 +915,14 @@ def get_schema_only_tables(schema1, schema2, config):
         # Find tables in schema1
         schema1_tables = set()
         if os.path.exists(schema1_dir) and os.path.isdir(schema1_dir):
-            # Find all DOCX files in schema directory
-            docx_files = glob.glob(os.path.join(schema1_dir, "**/*.docx"), recursive=True)
-            print(f"Found {len(docx_files)} DOCX files in {schema1_dir}")
+            # Find all supported files in schema directory - UPDATED TO INCLUDE SQL AND TXT
+            supported_files = []
+            for ext in ['docx', 'sql', 'txt']:
+                supported_files.extend(glob.glob(os.path.join(schema1_dir, f"**/*.{ext}"), recursive=True))
 
-            for file_path in docx_files:
+            print(f"Found {len(supported_files)} supported files in {schema1_dir}")
+
+            for file_path in supported_files:
                 try:
                     inserts = extract_insert_statements(file_path)
                     for insert in inserts:
@@ -906,41 +933,44 @@ def get_schema_only_tables(schema1, schema2, config):
                 except Exception as e:
                     print(f"Error processing file {file_path}: {e}")
 
-                    # Find tables in schema2
-                schema2_tables = set()
-                if os.path.exists(schema2_dir) and os.path.isdir(schema2_dir):
-                    # Find all DOCX files in schema directory
-                    docx_files = glob.glob(os.path.join(schema2_dir, "**/*.docx"), recursive=True)
-                    print(f"Found {len(docx_files)} DOCX files in {schema2_dir}")
+        # Find tables in schema2
+        schema2_tables = set()
+        if os.path.exists(schema2_dir) and os.path.isdir(schema2_dir):
+            # Find all supported files in schema directory - UPDATED TO INCLUDE SQL AND TXT
+            supported_files = []
+            for ext in ['docx', 'sql', 'txt']:
+                supported_files.extend(glob.glob(os.path.join(schema2_dir, f"**/*.{ext}"), recursive=True))
 
-                    for file_path in docx_files:
-                        try:
-                            inserts = extract_insert_statements(file_path)
-                            for insert in inserts:
-                                # Extract table name from the dictionary
-                                table_name = insert.get("table_name")
-                                if table_name:
-                                    schema2_tables.add(table_name)
-                        except Exception as e:
-                            print(f"Error processing file {file_path}: {e}")
+            print(f"Found {len(supported_files)} supported files in {schema2_dir}")
 
-                print(f"Tables found in {schema1}: {schema1_tables}")
-                print(f"Tables found in {schema2}: {schema2_tables}")
+            for file_path in supported_files:
+                try:
+                    inserts = extract_insert_statements(file_path)
+                    for insert in inserts:
+                        # Extract table name from the dictionary
+                        table_name = insert.get("table_name")
+                        if table_name:
+                            schema2_tables.add(table_name)
+                except Exception as e:
+                    print(f"Error processing file {file_path}: {e}")
 
-                # Find tables only in schema1
-                only_in_schema1 = schema1_tables - schema2_tables
+        print(f"Tables found in {schema1}: {schema1_tables}")
+        print(f"Tables found in {schema2}: {schema2_tables}")
 
-                if only_in_schema1:
-                    print(f"✅ Discovered {len(only_in_schema1)} tables only in {schema1}: {only_in_schema1}")
-                    return list(only_in_schema1)
-                else:
-                    print(f"No tables found exclusively in {schema1}")
-                    return []
-    except Exception as e:
-            print(f"⚠️ Error discovering schema-only tables: {e}")
-            import traceback
-            traceback.print_exc()
+        # Find tables only in schema1
+        only_in_schema1 = schema1_tables - schema2_tables
+
+        if only_in_schema1:
+            print(f"✅ Discovered {len(only_in_schema1)} tables only in {schema1}: {only_in_schema1}")
+            return list(only_in_schema1)
+        else:
+            print(f"No tables found exclusively in {schema1}")
             return []
+    except Exception as e:
+        print(f"⚠️ Error discovering schema-only tables: {e}")
+        import traceback
+        traceback.print_exc()
+        return []
 
 def compare_table_in_chunks(schema1, schema2, table, chunk_size=1000, config=None):
             """
@@ -1597,218 +1627,222 @@ def generate_and_save_reports(data_comparison, config, temp_dir):
                 "html_report": html_report_path
             }
 
+
 def process_document_data(config, use_ge, context):
-            """Process data using document-based approach and return report information."""
-            # Create a report ID for this run
-            report_id = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    """Process data using document-based approach and return report information."""
+    # Create a report ID for this run
+    report_id = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
-            # Step 1: Load data from docx files with parallel processing
-            print("\nStep 1: Loading data from Word documents (in parallel)...")
-            data_dir = config["data_directory"]
+    # Step 1: Load data from all supported files with parallel processing
+    print("\nStep 1: Loading data from documents (in parallel)...")
+    data_dir = config["data_directory"]
 
+    try:
+        # Find all supported files - UPDATED TO INCLUDE SQL AND TXT
+        files = []
+        for ext in ['docx', 'sql', 'txt']:
+            files.extend([f for f in os.listdir(data_dir) if f.endswith(f".{ext}")])
+
+        print(f"Found {len(files)} supported documents in {data_dir}: {files}")
+    except Exception as e:
+        print(f"❌ Error accessing data directory {data_dir}: {e}")
+        return {"success": False, "error": f"Failed to access data directory: {str(e)}"}
+
+    # Prepare file paths for parallel processing
+    file_paths = [os.path.join(data_dir, file) for file in files]
+
+    # Determine number of workers based on CPU cores
+    max_workers = min(multiprocessing.cpu_count(), len(file_paths))
+    print(f"Using {max_workers} parallel workers for document processing")
+
+    all_inserts = []
+    # Use ProcessPoolExecutor for parallel file processing
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+        future_to_file = {executor.submit(process_single_file, file_path): file_path for file_path in file_paths}
+
+        for future in as_completed(future_to_file):
+            file_path = future_to_file[future]
             try:
-                files = [f for f in os.listdir(data_dir) if f.endswith(".docx")]
-                print(f"Found {len(files)} Word documents in {data_dir}: {files}")
+                inserts = future.result()
+                all_inserts.extend(inserts)
+                print(f"✅ Completed processing: {file_path}")
             except Exception as e:
-                print(f"❌ Error accessing data directory {data_dir}: {e}")
-                return {"success": False, "error": f"Failed to access data directory: {str(e)}"}
+                print(f"❌ Error processing file {file_path}: {e}")
 
-            # Prepare file paths for parallel processing
-            file_paths = [os.path.join(data_dir, file) for file in files]
+    print(f"🧠 Total rows extracted from INSERT statements: {len(all_inserts)}")
 
-            # Determine number of workers based on CPU cores
-            max_workers = min(multiprocessing.cpu_count(), len(file_paths))
-            print(f"Using {max_workers} parallel workers for document processing")
+    if len(all_inserts) == 0:
+        print("❌ No data extracted from documents. Cannot proceed.")
+        return {"success": False, "error": "No data extracted from documents"}
 
-            all_inserts = []
-            # Use ProcessPoolExecutor for parallel file processing
+    # Process INSERT statements to DataFrames
+    print("\nStep 2: Converting data to DataFrames...")
+    try:
+        all_dataframes = inserts_to_dataframe(all_inserts)
+        print(f"📊 Created DataFrames for {len(all_dataframes)} tables")
+
+        # Print summary of data loaded
+        for key, df in all_dataframes.items():
+            print(f"  - {key}: {len(df)} rows, columns: {list(df.columns)}")
+    except Exception as e:
+        print(f"❌ Error converting to DataFrames: {e}")
+        import traceback
+        traceback.print_exc()
+        return {"success": False, "error": f"Error converting to DataFrames: {str(e)}"}
+
+    # Organize data by schema
+    print("\nStep 3: Organizing data by schema...")
+    try:
+        schema_data = organize_by_schema(all_dataframes)
+        print(f"Found {len(schema_data)} schemas: {list(schema_data.keys())}")
+    except Exception as e:
+        print(f"❌ Error organizing data by schema: {e}")
+        return {"success": False, "error": f"Error organizing data by schema: {str(e)}"}
+
+    # Load schema names from config
+    schema_names = config.get("schemas", [])
+    print(f"Schemas specified in config: {schema_names}")
+
+    if len(schema_names) != 2:
+        print(f"⚠️ Missing one or both of the required schemas in config.yaml")
+        available_schemas = list(schema_data.keys())
+        if len(available_schemas) >= 2:
+            print(f"Using available schemas instead: {available_schemas[0]}, {available_schemas[1]}")
+            schema_names = available_schemas[:2]
+        else:
+            print(f"❌ Need at least two schemas to generate comparison report")
+            return {"success": False,
+                    "error": "Need at least two schemas to generate comparison report"}
+
+    schema1, schema2 = schema_names
+    print(f"Comparing data between schemas: {schema1} (source) and {schema2} (destination)")
+
+    # Step 4: Generate data chunks and store in vector database
+    print("\nStep 4: Storing data in vector database...")
+    try:
+        data_chunks = chunk_data(all_dataframes)
+        store_data(data_chunks, config)
+        print("✅ Data stored in vector database")
+    except Exception as e:
+        print(f"⚠️ Error storing data: {e}")
+        print("Continuing without vector storage...")
+
+    # Step 5: Generate data comparison report
+    print("\nStep 5: Generating data comparison report...")
+    if schema1 in schema_data and schema2 in schema_data:
+        schema1_data = schema_data[schema1]
+        schema2_data = schema_data[schema2]
+
+        # Get common tables
+        try:
+            print("Finding common tables between schemas...")
+            common_tables = get_common_tables(schema1_data, schema2_data)
+        except Exception as e:
+            print(f"⚠️ Error using get_common_tables function: {e}")
+            # Fallback implementation
+            common_tables = set(schema1_data.keys()) & set(schema2_data.keys())
+
+        # Find tables that exist in only one schema
+        schema1_only_tables = set(schema1_data.keys()) - set(schema2_data.keys())
+        schema2_only_tables = set(schema2_data.keys()) - set(schema1_data.keys())
+        mismatched_tables = schema1_only_tables.union(schema2_only_tables)
+
+        print(f"Found {len(common_tables)} common tables to compare: {common_tables}")
+        print(f"Found {len(mismatched_tables)} mismatched tables: {mismatched_tables}")
+
+        if len(common_tables) == 0:
+            print("❌ No common tables found between schemas. Cannot generate comparison report.")
+            return {"success": False, "error": "No common tables found between schemas"}
+
+        # Generate data comparison report
+        print("Comparing data between schemas...")
+        try:
+            data_comparison = generate_data_comparison_report(
+                schema1_data,
+                schema2_data,
+                schema1,
+                schema2
+            )
+
+            # Add information about mismatched tables to the report
+            data_comparison["mismatched_tables"] = {
+                f"{schema1}_only": list(schema1_only_tables),
+                f"{schema2}_only": list(schema2_only_tables)
+            }
+
+            # Add report ID
+            data_comparison["meta"]["report_id"] = report_id
+
+            print("✅ Data comparison completed")
+
+        except Exception as e:
+            print(f"❌ Error generating comparison report: {e}")
+            import traceback
+            traceback.print_exc()
+            return {"success": False, "error": f"Error generating comparison report: {str(e)}"}
+
+        # Optional: Use Great Expectations for additional validation
+        if use_ge and context is not None:
+            print("\nPerforming Great Expectations validations (in parallel)...")
+            ge_results = {}
+
+            # Prepare tasks for parallel processing
+            validation_tasks = []
+            for table in common_tables:
+                if table in schema1_data and table in schema2_data:
+                    df1 = schema1_data[table]
+                    df2 = schema2_data[table]
+                    validation_tasks.append((table, df1, df2, context))
+
+            # Use parallel processing for Great Expectations validation
             with ProcessPoolExecutor(max_workers=max_workers) as executor:
-                future_to_file = {executor.submit(process_single_file, file_path): file_path for file_path in
-                                  file_paths}
+                for table, result in executor.map(validate_table_with_ge, validation_tasks):
+                    ge_results[table] = result
+                    print(f"✅ GE validation for table {table} completed")
 
-                for future in as_completed(future_to_file):
-                    file_path = future_to_file[future]
-                    try:
-                        inserts = future.result()
-                        all_inserts.extend(inserts)
-                        print(f"✅ Completed processing: {file_path}")
-                    except Exception as e:
-                        print(f"❌ Error processing file {file_path}: {e}")
+            # Add GE results to the comparison report
+            data_comparison["great_expectations"] = ge_results
 
-            print(f"🧠 Total rows extracted from INSERT statements: {len(all_inserts)}")
-
-            if len(all_inserts) == 0:
-                print("❌ No data extracted from documents. Cannot proceed.")
-                return {"success": False, "error": "No data extracted from documents"}
-
-            # Process INSERT statements to DataFrames
-            print("\nStep 2: Converting data to DataFrames...")
+        # Step 6: Save JSON report
+        print("\nStep 6: Saving JSON report...")
+        json_report_path = os.path.join("validation_reports", f"validation_report_{report_id}.json")
+        try:
+            os.makedirs(os.path.dirname(json_report_path), exist_ok=True)
+            with open(json_report_path, "w") as f:
+                json.dump(data_comparison, f, indent=2)
+            print(f"✅ JSON report saved to {json_report_path}")
+        except Exception as e:
+            print(f"❌ Error saving JSON report: {e}")
+            # Try with a different path as a fallback
+            alt_path = f"validation_report_{report_id}.json"
+            print(f"Trying to save to {alt_path} instead...")
             try:
-                all_dataframes = inserts_to_dataframe(all_inserts)
-                print(f"📊 Created DataFrames for {len(all_dataframes)} tables")
+                with open(alt_path, "w") as f:
+                    json.dump(data_comparison, f, indent=2)
+                print(f"✅ JSON report saved to {alt_path}")
+                json_report_path = alt_path
+            except Exception as e2:
+                print(f"❌ Error saving to alternate path: {e2}")
+                return {"success": False, "error": f"Error saving report: {str(e)} and {str(e2)}"}
 
-                # Print summary of data loaded
-                for key, df in all_dataframes.items():
-                    print(f"  - {key}: {len(df)} rows, columns: {list(df.columns)}")
-            except Exception as e:
-                print(f"❌ Error converting to DataFrames: {e}")
-                import traceback
-                traceback.print_exc()
-                return {"success": False, "error": f"Error converting to DataFrames: {str(e)}"}
+        # Step 7: Generate HTML report
+        html_report_path, _ = generate_html_report(data_comparison)
+        if not html_report_path:
+            print("⚠️ Could not generate HTML report")
+            html_report_path = None
 
-            # Organize data by schema
-            print("\nStep 3: Organizing data by schema...")
-            try:
-                schema_data = organize_by_schema(all_dataframes)
-                print(f"Found {len(schema_data)} schemas: {list(schema_data.keys())}")
-            except Exception as e:
-                print(f"❌ Error organizing data by schema: {e}")
-                return {"success": False, "error": f"Error organizing data by schema: {str(e)}"}
-
-            # Load schema names from config
-            schema_names = config.get("schemas", [])
-            print(f"Schemas specified in config: {schema_names}")
-
-            if len(schema_names) != 2:
-                print(f"⚠️ Missing one or both of the required schemas in config.yaml")
-                available_schemas = list(schema_data.keys())
-                if len(available_schemas) >= 2:
-                    print(f"Using available schemas instead: {available_schemas[0]}, {available_schemas[1]}")
-                    schema_names = available_schemas[:2]
-                else:
-                    print(f"❌ Need at least two schemas to generate comparison report")
-                    return {"success": False,
-                            "error": "Need at least two schemas to generate comparison report"}
-
-            schema1, schema2 = schema_names
-            print(f"Comparing data between schemas: {schema1} (source) and {schema2} (destination)")
-
-            # Step 4: Generate data chunks and store in vector database
-            print("\nStep 4: Storing data in vector database...")
-            try:
-                data_chunks = chunk_data(all_dataframes)
-                store_data(data_chunks, config)
-                print("✅ Data stored in vector database")
-            except Exception as e:
-                print(f"⚠️ Error storing data: {e}")
-                print("Continuing without vector storage...")
-
-            # Step 5: Generate data comparison report
-            print("\nStep 5: Generating data comparison report...")
-            if schema1 in schema_data and schema2 in schema_data:
-                schema1_data = schema_data[schema1]
-                schema2_data = schema_data[schema2]
-
-                # Get common tables
-                try:
-                    print("Finding common tables between schemas...")
-                    common_tables = get_common_tables(schema1_data, schema2_data)
-                except Exception as e:
-                    print(f"⚠️ Error using get_common_tables function: {e}")
-                    # Fallback implementation
-                    common_tables = set(schema1_data.keys()) & set(schema2_data.keys())
-
-                # Find tables that exist in only one schema
-                schema1_only_tables = set(schema1_data.keys()) - set(schema2_data.keys())
-                schema2_only_tables = set(schema2_data.keys()) - set(schema1_data.keys())
-                mismatched_tables = schema1_only_tables.union(schema2_only_tables)
-
-                print(f"Found {len(common_tables)} common tables to compare: {common_tables}")
-                print(f"Found {len(mismatched_tables)} mismatched tables: {mismatched_tables}")
-
-                if len(common_tables) == 0:
-                    print("❌ No common tables found between schemas. Cannot generate comparison report.")
-                    return {"success": False, "error": "No common tables found between schemas"}
-
-                # Generate data comparison report
-                print("Comparing data between schemas...")
-                try:
-                    data_comparison = generate_data_comparison_report(
-                        schema1_data,
-                        schema2_data,
-                        schema1,
-                        schema2
-                    )
-
-                    # Add information about mismatched tables to the report
-                    data_comparison["mismatched_tables"] = {
-                        f"{schema1}_only": list(schema1_only_tables),
-                        f"{schema2}_only": list(schema2_only_tables)
-                    }
-
-                    # Add report ID
-                    data_comparison["meta"]["report_id"] = report_id
-
-                    print("✅ Data comparison completed")
-
-                except Exception as e:
-                    print(f"❌ Error generating comparison report: {e}")
-                    import traceback
-                    traceback.print_exc()
-                    return {"success": False, "error": f"Error generating comparison report: {str(e)}"}
-
-                # Optional: Use Great Expectations for additional validation
-                if use_ge and context is not None:
-                    print("\nPerforming Great Expectations validations (in parallel)...")
-                    ge_results = {}
-
-                    # Prepare tasks for parallel processing
-                    validation_tasks = []
-                    for table in common_tables:
-                        if table in schema1_data and table in schema2_data:
-                            df1 = schema1_data[table]
-                            df2 = schema2_data[table]
-                            validation_tasks.append((table, df1, df2, context))
-
-                    # Use parallel processing for Great Expectations validation
-                    with ProcessPoolExecutor(max_workers=max_workers) as executor:
-                        for table, result in executor.map(validate_table_with_ge, validation_tasks):
-                            ge_results[table] = result
-                            print(f"✅ GE validation for table {table} completed")
-
-                    # Add GE results to the comparison report
-                    data_comparison["great_expectations"] = ge_results
-
-                # Step 6: Save JSON report
-                print("\nStep 6: Saving JSON report...")
-                json_report_path = os.path.join("validation_reports", f"validation_report_{report_id}.json")
-                try:
-                    os.makedirs(os.path.dirname(json_report_path), exist_ok=True)
-                    with open(json_report_path, "w") as f:
-                        json.dump(data_comparison, f, indent=2)
-                    print(f"✅ JSON report saved to {json_report_path}")
-                except Exception as e:
-                    print(f"❌ Error saving JSON report: {e}")
-                    # Try with a different path as a fallback
-                    alt_path = f"validation_report_{report_id}.json"
-                    print(f"Trying to save to {alt_path} instead...")
-                    try:
-                        with open(alt_path, "w") as f:
-                            json.dump(data_comparison, f, indent=2)
-                        print(f"✅ JSON report saved to {alt_path}")
-                        json_report_path = alt_path
-                    except Exception as e2:
-                        print(f"❌ Error saving to alternate path: {e2}")
-                        return {"success": False, "error": f"Error saving report: {str(e)} and {str(e2)}"}
-
-                # Step 7: Generate HTML report
-                html_report_path, _ = generate_html_report(data_comparison)
-                if not html_report_path:
-                    print("⚠️ Could not generate HTML report")
-                    html_report_path = None
-
-                # Return report information
-                return {
-                    "success": True,
-                    "report_id": report_id,
-                    "json_report": json_report_path,
-                    "html_report": html_report_path
-                }
-            else:
-                print(
-                    f"❌ One or both schemas not found in the data. Available schemas: {list(schema_data.keys())}")
-                return {"success": False,
-                        "error": f"One or both schemas not found. Available: {list(schema_data.keys())}"}
+        # Return report information
+        return {
+            "success": True,
+            "report_id": report_id,
+            "json_report": json_report_path,
+            "html_report": html_report_path
+        }
+    else:
+        print(
+            f"❌ One or both schemas not found in the data. Available schemas: {list(schema_data.keys())}")
+        return {"success": False,
+                "error": f"One or both schemas not found. Available: {list(schema_data.keys())}"}
 
 
 def get_validation_status(report_id):
