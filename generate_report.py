@@ -972,321 +972,324 @@ def get_schema_only_tables(schema1, schema2, config):
         traceback.print_exc()
         return []
 
+
 def compare_table_in_chunks(schema1, schema2, table, chunk_size=1000, config=None):
-            """
-            Compare data between two schemas for a single table, processing in chunks
-            to minimize memory usage.
-            """
-            print(f"\nComparing data for table {table} in chunks of {chunk_size} rows...")
+    """
+    Compare data between two schemas for a single table, processing in chunks
+    to minimize memory usage.
+    """
+    print(f"\nComparing data for table {table} in chunks of {chunk_size} rows...")
 
-            # Initialize counters with minimal memory footprint
-            rows_in_source = 0
-            rows_in_destination = 0
-            matching_rows = 0
-            different_rows = 0
-            missing_rows = 0
-            extra_rows = 0
+    # Initialize counters with minimal memory footprint
+    rows_in_source = 0
+    rows_in_destination = 0
+    matching_rows = 0
+    different_rows = 0
+    missing_rows = 0
+    extra_rows = 0
 
-            # Track differences (keep only a limited number for reporting to save memory)
-            max_differences_to_track = min(100, config.get("max_differences", 100)) if config else 100
-            different_rows_details = []
-            missing_rows_details = []
-            extra_rows_details = []
-            matching_rows_details = []
+    # Track differences (keep only a limited number for reporting to save memory)
+    max_differences_to_track = min(100, config.get("max_differences", 100)) if config else 100
+    different_rows_details = []
+    missing_rows_details = []
+    extra_rows_details = []
+    matching_rows_details = []
 
-            # Get actual data from the config's loaded data
-            source_data = []
-            dest_data = []
+    # Get actual data from the config's loaded data
+    source_data = []
+    dest_data = []
 
-            try:
-                # Import required modules
-                from parsers.docx_data_parser import extract_insert_statements
+    try:
+        # Import required modules
+        from parsers.docx_data_parser import extract_insert_statements
 
-                # If uploaded files are available in config, use them directly
-                if config.get('source_files'):
-                    print("Loading from uploaded source files...")
-                    for file_path in config['source_files']:
-                        print(f"Trying file: {file_path}")
-                        try:
-                            # Extract all INSERT statements from the file
-                            all_inserts = extract_insert_statements(file_path)
-                            print(f"Found {len(all_inserts)} total INSERT statements")
+        # If uploaded files are available in config, use them directly
+        if config.get('source_files'):
+            print("Loading from uploaded source files...")
+            for file_path in config['source_files']:
+                print(f"Trying file: {file_path}")
+                try:
+                    # Extract all INSERT statements from the file
+                    all_inserts = extract_insert_statements(file_path)
+                    print(f"Found {len(all_inserts)} total INSERT statements")
 
-                            # Filter inserts for this specific table
-                            for insert_dict in all_inserts:
-                                if insert_dict.get("table_name") == table:
-                                    # Each insert_dict contains one row
-                                    columns = insert_dict.get("columns", [])
-                                    values = insert_dict.get("values", [])
+                    # Filter inserts for this specific table
+                    for insert_dict in all_inserts:
+                        if insert_dict.get("table_name") == table:
+                            # Each insert_dict contains one row
+                            columns = insert_dict.get("columns", [])
+                            values = insert_dict.get("values", [])
 
-                                    # Convert to dictionary with column names as keys
-                                    if len(values) == len(columns):
-                                        row_dict = {}
-                                        for i, col_name in enumerate(columns):
-                                            row_dict[col_name] = values[i]
-                                        source_data.append(row_dict)
+                            # Convert to dictionary with column names as keys
+                            if len(values) == len(columns):
+                                row_dict = {}
+                                for i, col_name in enumerate(columns):
+                                    row_dict[col_name] = values[i]
+                                source_data.append(row_dict)
 
-                            print(f"Extracted {len(source_data)} rows for table {table} from source")
-                            if source_data:
-                                print(f"First row: {source_data[0]}")
+                    print(f"Extracted {len(source_data)} rows for table {table} from source")
+                    if source_data:
+                        print(f"First row: {source_data[0]}")
 
-                        except Exception as e:
-                            print(f"Error loading from source file {file_path}: {e}")
-                            import traceback
-                            traceback.print_exc()
+                except Exception as e:
+                    print(f"Error loading from source file {file_path}: {e}")
+                    import traceback
+                    traceback.print_exc()
 
-                if config.get('dest_files'):
-                    print("Loading from uploaded destination files...")
-                    for file_path in config['dest_files']:
-                        print(f"Trying file: {file_path}")
-                        try:
-                            # Extract all INSERT statements from the file
-                            all_inserts = extract_insert_statements(file_path)
-                            print(f"Found {len(all_inserts)} total INSERT statements")
+        if config.get('dest_files'):
+            print("Loading from uploaded destination files...")
+            for file_path in config['dest_files']:
+                print(f"Trying file: {file_path}")
+                try:
+                    # Extract all INSERT statements from the file
+                    all_inserts = extract_insert_statements(file_path)
+                    print(f"Found {len(all_inserts)} total INSERT statements")
 
-                            # Filter inserts for this specific table
-                            for insert_dict in all_inserts:
-                                if insert_dict.get("table_name") == table:
-                                    # Each insert_dict contains one row
-                                    columns = insert_dict.get("columns", [])
-                                    values = insert_dict.get("values", [])
+                    # Filter inserts for this specific table
+                    for insert_dict in all_inserts:
+                        if insert_dict.get("table_name") == table:
+                            # Each insert_dict contains one row
+                            columns = insert_dict.get("columns", [])
+                            values = insert_dict.get("values", [])
 
-                                    # Convert to dictionary with column names as keys
-                                    if len(values) == len(columns):
-                                        row_dict = {}
-                                        for i, col_name in enumerate(columns):
-                                            row_dict[col_name] = values[i]
-                                        dest_data.append(row_dict)
+                            # Convert to dictionary with column names as keys
+                            if len(values) == len(columns):
+                                row_dict = {}
+                                for i, col_name in enumerate(columns):
+                                    row_dict[col_name] = values[i]
+                                dest_data.append(row_dict)
 
-                            print(f"Extracted {len(dest_data)} rows for table {table} from destination")
-                            if dest_data:
-                                print(f"First row: {dest_data[0]}")
+                    print(f"Extracted {len(dest_data)} rows for table {table} from destination")
+                    if dest_data:
+                        print(f"First row: {dest_data[0]}")
 
-                        except Exception as e:
-                            print(f"Error loading from dest file {file_path}: {e}")
-                            import traceback
-                            traceback.print_exc()
+                except Exception as e:
+                    print(f"Error loading from dest file {file_path}: {e}")
+                    import traceback
+                    traceback.print_exc()
 
-            except Exception as e:
-                print(f"Error loading data for table {table}: {e}")
-                import traceback
-                traceback.print_exc()
-                # Use empty lists as fallback
-                source_data = []
-                dest_data = []
+    except Exception as e:
+        print(f"Error loading data for table {table}: {e}")
+        import traceback
+        traceback.print_exc()
+        # Use empty lists as fallback
+        source_data = []
+        dest_data = []
 
-            # Get the actual counts
-            source_total = len(source_data)
-            dest_total = len(dest_data)
+    # Get the actual counts
+    source_total = len(source_data)
+    dest_total = len(dest_data)
 
-            print(f"Processing table with {source_total} source rows and {dest_total} destination rows")
+    print(f"Processing table with {source_total} source rows and {dest_total} destination rows")
 
-            # Process source data first to build index
-            print("Building source data index...")
-            source_index = {}  # Dict mapping primary key to row data
-            source_keys = set()
+    # Process source data first to build index
+    print("Building source data index...")
+    source_index = {}  # Dict mapping primary key to row data
+    source_keys = set()
 
-            # Identify the primary key field dynamically
-            primary_key = None
-            source_id_field = None
-            dest_id_field = None
+    # Identify the primary key field dynamically
+    primary_key = None
+    source_id_field = None
+    dest_id_field = None
 
-            if source_data and dest_data:
-                # Get the first row from each dataset
-                first_source_row = source_data[0]
-                first_dest_row = dest_data[0]
+    if source_data and dest_data:
+        # Get the first row from each dataset
+        first_source_row = source_data[0]
+        first_dest_row = dest_data[0]
 
-                # Find the primary key (looking for table-specific ID like asset_id, payroll_id, etc.)
-                for key in first_source_row.keys():
-                    if key.endswith('_id') and key not in ['employee_id', 'contractor_id', 'department_id']:
-                        primary_key = key
-                        break
+        # Find the primary key (looking for table-specific ID like asset_id, payroll_id, etc.)
+        for key in first_source_row.keys():
+            if key.endswith('_id') and key not in ['employee_id', 'contractor_id', 'department_id']:
+                primary_key = key
+                break
 
-                # If no specific table ID found, use the first field that ends with _id
-                if primary_key is None:
-                    for key in first_source_row.keys():
-                        if key.endswith('_id'):
-                            primary_key = key
-                            break
+        # If no specific table ID found, use the first field that ends with _id
+        if primary_key is None:
+            for key in first_source_row.keys():
+                if key.endswith('_id'):
+                    primary_key = key
+                    break
 
-                # Check for entity-specific ID fields
-                if 'employee_id' in first_source_row:
-                    source_id_field = 'employee_id'
-                if 'contractor_id' in first_dest_row:
-                    dest_id_field = 'contractor_id'
+        # If still no ID found, check if 'id' column exists
+        if primary_key is None and 'id' in first_source_row and 'id' in first_dest_row:
+            primary_key = 'id'
 
-                print(f"Using primary key: {primary_key}")
-                print(f"Source ID field: {source_id_field}")
-                print(f"Destination ID field: {dest_id_field}")
+        # If STILL no ID found, use first column as a fallback
+        if primary_key is None and len(first_source_row) > 0:
+            primary_key = list(first_source_row.keys())[0]
+            print(f"No ID column found, using first column as key: {primary_key}")
 
-            # Index source data - keep values exactly as they are
-            for row in source_data:
-                if primary_key and primary_key in row:
-                    key_value = str(row[primary_key]).strip()  # Convert to string and strip whitespace
-                    source_index[key_value] = row
-                    source_keys.add(key_value)
+        # Check for entity-specific ID fields
+        if 'employee_id' in first_source_row:
+            source_id_field = 'employee_id'
+        if 'contractor_id' in first_dest_row:
+            dest_id_field = 'contractor_id'
 
-            rows_in_source = len(source_data)
+        print(f"Using primary key: {primary_key}")
+        print(f"Source ID field: {source_id_field}")
+        print(f"Destination ID field: {dest_id_field}")
 
-            # Now process destination data and compare
-            print("Processing destination data and comparing...")
-            dest_keys = set()
+    # Index source data - keep values exactly as they are
+    for row in source_data:
+        if primary_key and primary_key in row:
+            key_value = str(row[primary_key]).strip()  # Convert to string and strip whitespace
+            source_index[key_value] = row
+            source_keys.add(key_value)
 
-            for row in dest_data:
-                if primary_key and primary_key in row:
-                    key_value = str(row[primary_key]).strip()  # Convert to string and strip whitespace
-                    dest_keys.add(key_value)
+    rows_in_source = len(source_data)
 
-                    if key_value in source_index:
-                        # Row exists in both source and destination
-                        source_row = source_index[key_value]
-                        row_differences = {}
+    # Now process destination data and compare
+    print("Processing destination data and comparing...")
+    dest_keys = set()
 
-                        # Debug for specific tables
-                        if table == 'trainingrecords' and primary_key:
-                            print(f"\nDebug - TrainingRecords comparison:")
-                            print(f"Primary key field: {primary_key}")
-                            print(f"Source row key: {key_value}")
-                            print(f"Source row: {source_row}")
-                            print(f"Dest row: {row}")
+    for row in dest_data:
+        if primary_key and primary_key in row:
+            key_value = str(row[primary_key]).strip()  # Convert to string and strip whitespace
+            dest_keys.add(key_value)
 
-                        # Get all fields from both rows
-                        all_fields = set(source_row.keys()).union(set(row.keys()))
+            if key_value in source_index:
+                # Row exists in both source and destination
+                source_row = source_index[key_value]
+                row_differences = {}
 
-                        for field in all_fields:
-                            # Skip entity-specific ID fields since they're expected to be different
+                # Debug for specific tables
+                if table == 'table_17' and primary_key:
+                    print(f"\nDebug - Table 17 comparison:")
+                    print(f"Primary key field: {primary_key}")
+                    print(f"Source row key: {key_value}")
+                    print(f"Source row: {source_row}")
+                    print(f"Dest row: {row}")
+
+                # Get all fields from both rows
+                all_fields = set(source_row.keys()).union(set(row.keys()))
+
+                for field in all_fields:
+                    # Skip entity-specific ID fields since they're expected to be different
+                    if field in ['employee_id', 'contractor_id']:
+                        continue
+
+                    # Get values from both rows
+                    source_val = source_row.get(field)
+                    dest_val = row.get(field)
+
+                    # Normalize values - strip whitespace and convert to string
+                    source_str = str(source_val).strip() if source_val is not None else None
+                    dest_str = str(dest_val).strip() if dest_val is not None else None
+
+                    # Debug output for name fields
+                    if field == 'name' and source_str and dest_str:
+                        print(f"Debug - Comparing {field}: '{source_str}' vs '{dest_str}'")
+                        print(f"  Equal? {source_str == dest_str}")
+
+                    # Direct comparison after normalization
+                    if source_str != dest_str:
+                        row_differences[field] = {
+                            "source": source_str,
+                            "destination": dest_str
+                        }
+
+                if row_differences:
+                    different_rows += 1
+                    if len(different_rows_details) < max_differences_to_track:
+                        # Create proper details with both source and destination rows
+                        dest_row_clean = {}
+                        for field, value in row.items():
+                            dest_row_clean[field] = str(value).strip() if value is not None else None
+
+                        source_row_clean = {}
+                        for field, value in source_row.items():
+                            source_row_clean[field] = str(value).strip() if value is not None else None
+
+                        different_rows_details.append({
+                            "source_row": source_row_clean,
+                            "destination_row": dest_row_clean,
+                            "differences": row_differences
+                        })
+                else:
+                    matching_rows += 1
+                    if len(matching_rows_details) < max_differences_to_track:
+                        # Store matching row
+                        matching_row = {}
+                        for field, value in source_row.items():
+                            # Skip entity-specific ID field
                             if field in ['employee_id', 'contractor_id']:
                                 continue
-
-                            # Get values from both rows
-                            source_val = source_row.get(field)
-                            dest_val = row.get(field)
-
-                            # Normalize values - strip whitespace and convert to string
-                            source_str = str(source_val).strip() if source_val is not None else None
-                            dest_str = str(dest_val).strip() if dest_val is not None else None
-
-                            # Debug output for date fields
-                            if field == 'completed_date' and source_str and dest_str:
-                                print(f"Debug - Comparing {field}: '{source_str}' vs '{dest_str}'")
-                                print(f"  Source type: {type(source_val)}, Dest type: {type(dest_val)}")
-                                print(f"  String lengths: {len(source_str)} vs {len(dest_str)}")
-                                print(f"  Raw bytes: {repr(source_str)} vs {repr(dest_str)}")
-                                print(f"  Equal? {source_str == dest_str}")
-
-                                # Check for any non-visible characters
-                                import unicodedata
-                                source_normalized = unicodedata.normalize('NFKC', source_str)
-                                dest_normalized = unicodedata.normalize('NFKC', dest_str)
-                                print(f"  Normalized equal? {source_normalized == dest_normalized}")
-
-                            # Direct comparison after normalization
-                            if source_str != dest_str:
-                                row_differences[field] = {
-                                    "source": source_str,
-                                    "destination": dest_str
-                                }
-
-                        if row_differences:
-                            different_rows += 1
-                            if len(different_rows_details) < max_differences_to_track:
-                                # Create proper details with both source and destination rows
-                                dest_row_clean = {}
-                                for field, value in row.items():
-                                    dest_row_clean[field] = str(value).strip() if value is not None else None
-
-                                source_row_clean = {}
-                                for field, value in source_row.items():
-                                    source_row_clean[field] = str(value).strip() if value is not None else None
-
-                                different_rows_details.append({
-                                    "source_row": source_row_clean,
-                                    "destination_row": dest_row_clean,
-                                    "differences": row_differences
-                                })
-                        else:
-                            matching_rows += 1
-                            if len(matching_rows_details) < max_differences_to_track:
-                                # Store matching row
-                                matching_row = {}
-                                for field, value in source_row.items():
-                                    # Skip entity-specific ID field
-                                    if field in ['employee_id', 'contractor_id']:
-                                        continue
-                                    matching_row[field] = str(value).strip() if value is not None else None
-                                matching_rows_details.append(matching_row)
-                    else:
-                        # Row exists only in destination (extra)
-                        extra_rows += 1
-                        if len(extra_rows_details) < max_differences_to_track:
-                            clean_row = {}
-                            for field, value in row.items():
-                                clean_row[field] = str(value).strip() if value is not None else None
-                            extra_rows_details.append(clean_row)
-
-            rows_in_destination = len(dest_data)
-
-            # Identify missing rows (in source but not in destination)
-            missing_keys = source_keys - dest_keys
-            missing_rows = len(missing_keys)
-
-            # Collect a sample of missing rows for reporting
-            for key in list(missing_keys)[:max_differences_to_track]:
-                if key in source_index:
-                    source_row = source_index[key]
+                            matching_row[field] = str(value).strip() if value is not None else None
+                        matching_rows_details.append(matching_row)
+            else:
+                # Row exists only in destination (extra)
+                extra_rows += 1
+                if len(extra_rows_details) < max_differences_to_track:
                     clean_row = {}
-                    for field, value in source_row.items():
+                    for field, value in row.items():
                         clean_row[field] = str(value).strip() if value is not None else None
-                    missing_rows_details.append(clean_row)
+                    extra_rows_details.append(clean_row)
 
-            # Debug: Print detailed comparison for first few rows
-            if source_data and dest_data:
-                print(f"\nDebug - First source row: {source_data[0]}")
-                print(f"Debug - First dest row: {dest_data[0]}")
+    rows_in_destination = len(dest_data)
 
-                # Check primary key matching
-                if primary_key:
-                    source_key = str(source_data[0].get(primary_key)).strip()
-                    for dest_row in dest_data:
-                        dest_key = str(dest_row.get(primary_key)).strip()
-                        if source_key == dest_key:
-                            print(f"Found matching primary key: {source_key}")
-                            break
+    # Identify missing rows (in source but not in destination)
+    missing_keys = source_keys - dest_keys
+    missing_rows = len(missing_keys)
 
-            # Compute summary for this table
-            has_differences = (different_rows > 0 or missing_rows > 0 or extra_rows > 0)
+    # Collect a sample of missing rows for reporting
+    for key in list(missing_keys)[:max_differences_to_track]:
+        if key in source_index:
+            source_row = source_index[key]
+            clean_row = {}
+            for field, value in source_row.items():
+                clean_row[field] = str(value).strip() if value is not None else None
+            missing_rows_details.append(clean_row)
 
-            table_summary = {
-                "rows_in_source": rows_in_source,
-                "rows_in_destination": rows_in_destination,
-                "matching_rows": matching_rows,
-                "different_rows": different_rows,
-                "missing_rows": missing_rows,
-                "extra_rows": extra_rows,
-                "has_differences": has_differences
-            }
+    # Debug: Print detailed comparison for first few rows
+    if source_data and dest_data:
+        print(f"\nDebug - First source row: {source_data[0]}")
+        print(f"Debug - First dest row: {dest_data[0]}")
 
-            # Create table comparison result with proper structure
-            table_comparison = {
-                "success": has_differences == False,  # success is false when there are differences
-                "meta": {
-                    "source_schema": schema1,
-                    "destination_schema": schema2,
-                    "table": table,
-                    "timestamp": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
-                },
-                "summary": table_summary,
-                "details": {
-                    "matching_rows": matching_rows_details[:max_differences_to_track],
-                    "different_rows": different_rows_details[:max_differences_to_track] if different_rows > 0 else [],
-                    "missing_rows": missing_rows_details[:max_differences_to_track] if missing_rows > 0 else [],
-                    "extra_rows": extra_rows_details[:max_differences_to_track] if extra_rows > 0 else []
-                }
-            }
+        # Check primary key matching
+        if primary_key:
+            source_key = str(source_data[0].get(primary_key)).strip()
+            for dest_row in dest_data:
+                dest_key = str(dest_row.get(primary_key)).strip()
+                if source_key == dest_key:
+                    print(f"Found matching primary key: {source_key}")
+                    print(f"Source name: {source_data[0].get('name')}")
+                    print(f"Dest name: {dest_row.get('name')}")
+                    break
 
-            print(
-                f"✅ Table {table} comparison completed: {matching_rows} matching, {different_rows} different, {missing_rows} missing, {extra_rows} extra")
-            return table_comparison
+    # Compute summary for this table
+    has_differences = (different_rows > 0 or missing_rows > 0 or extra_rows > 0)
+
+    table_summary = {
+        "rows_in_source": rows_in_source,
+        "rows_in_destination": rows_in_destination,
+        "matching_rows": matching_rows,
+        "different_rows": different_rows,
+        "missing_rows": missing_rows,
+        "extra_rows": extra_rows,
+        "has_differences": has_differences
+    }
+
+    # Create table comparison result with proper structure
+    table_comparison = {
+        "success": has_differences == False,  # success is false when there are differences
+        "meta": {
+            "source_schema": schema1,
+            "destination_schema": schema2,
+            "table": table,
+            "timestamp": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
+        },
+        "summary": table_summary,
+        "details": {
+            "matching_rows": matching_rows_details[:max_differences_to_track],
+            "different_rows": different_rows_details[:max_differences_to_track] if different_rows > 0 else [],
+            "missing_rows": missing_rows_details[:max_differences_to_track] if missing_rows > 0 else [],
+            "extra_rows": extra_rows_details[:max_differences_to_track] if extra_rows > 0 else []
+        }
+    }
+
+    print(
+        f"✅ Table {table} comparison completed: {matching_rows} matching, {different_rows} different, {missing_rows} missing, {extra_rows} extra")
+    return table_comparison
 
 def process_table_result(table, table_comparison, summary, table_comparisons, temp_dir, config):
             """

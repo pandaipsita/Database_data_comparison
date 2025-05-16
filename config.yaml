@@ -6,10 +6,10 @@ embedding_model: nomic-embed-text
 ge_dir: ./great_expectations
 # Schemas to compare
 schemas:
-  - employee_management
-  - contractor_management
-source-schema: employee_management
-dest-schema: contractor_management
+  - schema_one_50plus
+  - schema_two_50plus
+source-schema: schema_one_50plus
+dest-schema: schema_two_50plus
 schema_paths:
-  employee_management: "/Users/ipsitapanda/database_data_validation/uploads/source/employee_management"
-  contractor_management: "/Users/ipsitapanda/database_data_validation/uploads/destination/contractor_management"
+  schema_one_50plus: "/Users/ipsitapanda/database_data_validation/uploads/source/schema_one_50plus"
+  schema_two_50plus: "/Users/ipsitapanda/database_data_validation/uploads/destination/schema_two_50plus"
